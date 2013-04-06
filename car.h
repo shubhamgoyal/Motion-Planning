@@ -34,7 +34,7 @@ class Car: public Object {
 
 		void control(dd h1, dd h2){
 			state.v += h1;
-			state.theta += tan(h2)/carLength;
+			state.theta += state.v*tan(h2)/carLength;
 		}
 
 	private:
