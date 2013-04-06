@@ -6,3 +6,8 @@ struct State {
 	dd v;
 	dd theta;
 } ;
+
+struct Control {
+	dd h1;
+	dd h2;
+} ;
