@@ -4,8 +4,9 @@
 
 
 class Object {
-   private:
+   protected:
       State state;
+		dd timeStep;
    public:
    //Constructor
 		Object () {
@@ -53,5 +54,9 @@ class Object {
 
 		State getState(){
 			return state;
+		}
+
+		void setTimeStep(dd dt){
+			timeStep = dt;
 		}
 };
