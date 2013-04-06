@@ -1,9 +1,0 @@
-#include <typeAndStruct.h>
-#include <2DObject.h>
-
-class Car {
-	private:
-		2DState state;
-	public:
-
-

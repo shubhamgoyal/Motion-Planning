@@ -1,12 +1,12 @@
-#include <typeAndStruct.h>
+#include "typeAndStruct.h"
 
 
-class Pedestrian {
+class Object {
    private:
-      2DState state;
+      State state;
    public:
    //Constructor
-		Pedestrian () {
+		Object () {
 			state.x = 0;
 			state.y = 0;
 			state.xDot = 0;
@@ -14,11 +14,11 @@ class Pedestrian {
 			state.theta = 0;
 		}
 
-      Pedestrian (2DState astate) {
+      Object (State astate) {
 	 		state = astate;
       }
       
-      Pedestrian (dd ax, dd ay, dd axDot, dd ayDot, dd atheta) {
+      Object (dd ax, dd ay, dd axDot, dd ayDot, dd atheta) {
 		  state.x = ax;
 		  state.y = ay;
 		  state.xDot = axDot;
@@ -47,7 +47,7 @@ class Pedestrian {
 			return state.theta;
 		}
 
-		2DState getState(){
+		State getState(){
 			return state;
 		}
 };

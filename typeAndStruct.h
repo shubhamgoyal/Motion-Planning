@@ -1,9 +1,9 @@
 typedef double dd;
 
-struct 2DState{
+struct State {
 	dd x;
 	dd y;
 	dd xDot;
 	dd yDot;
 	dd theta;
-};
+} ;
