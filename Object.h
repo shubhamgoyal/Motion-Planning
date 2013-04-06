@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "typeAndStruct.h"
 
 
@@ -9,8 +11,7 @@ class Object {
 		Object () {
 			state.x = 0;
 			state.y = 0;
-			state.xDot = 0;
-			state.yDot = 0;
+			state.v = 0;
 			state.theta = 0;
 		}
 
@@ -18,11 +19,10 @@ class Object {
 	 		state = astate;
       }
       
-      Object (dd ax, dd ay, dd axDot, dd ayDot, dd atheta) {
+      Object (dd ax, dd ay, dd av, dd atheta) {
 		  state.x = ax;
 		  state.y = ay;
-		  state.xDot = axDot;
-		  state.yDot = ayDot;
+		  state.v = av;
 		  state.theta = atheta;
 	  	}	  
 
@@ -35,12 +35,16 @@ class Object {
 			return state.y;
 		}
 
+		dd getV(){
+			return state.v;
+		}
+
 		dd getXDot(){
-			return state.xDot;
+			return state.v*cos(state.theta);
 		}
 
 		dd getYDot(){
-			return state.yDot;
+			return state.v*sin(state.theta);
 		}
 
 		dd getTheta(){
