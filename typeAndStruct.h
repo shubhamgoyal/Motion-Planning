@@ -1,3 +1,6 @@
+#ifndef STRUCTS
+#define STRUCTS
+
 typedef double dd;
 
 struct State {
@@ -7,3 +10,5 @@ struct State {
 	dd yDot;
 	dd theta;
 } ;
+
+#endif

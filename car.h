@@ -1,5 +1,8 @@
-#include "2DObject.h"
+#include "Object.h"
 
-class Car: public 2DObject {
-
+class Car: public Object {
+protected:
+	
+public:
+	Car();
 };
