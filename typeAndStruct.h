@@ -1,3 +1,6 @@
+#ifndef STRUCTS
+#define STRUCTS
+
 typedef double dd;
 
 struct State {
@@ -11,3 +14,5 @@ struct Control {
 	dd h1;
 	dd h2;
 } ;
+
+#endif

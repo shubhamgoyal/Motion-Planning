@@ -1,3 +1,6 @@
+#ifndef OBJECT_HEADER
+#define OBJECT_HEADER
+
 #include <cmath>
 
 #include "typeAndStruct.h"
@@ -56,7 +59,11 @@ class Object {
 			return state;
 		}
 
+		void update_state(double time_step);
+
 		void setTimeStep(dd dt){
 			timeStep = dt;
 		}
 };
+
+#endif
