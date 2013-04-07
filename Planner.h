@@ -11,20 +11,21 @@
 class Planner {
 	public:
 		//Constructor
-		Planner(Car* acar, std::vector<Pedestrian> *apedestrians){
+		Planner(Car* acar, std::vector<Pedestrian> apedestrians){
 			car = acar;
 			pedestrians = apedestrians;
 		};
 
 		//Public functions
-		//plan function will update the list of control from the 
-		//car class (car->path).
-		void plan(std::vector<Pedestrian> *apedestrians);
+		/* plan function will update the list of control from the 
+			car class (car->setPath()). 
+		 */
+		void plan(std::vector<Pedestrian> apedestrians);
 
 	protected:
 		Car *car;
-		std::vector<Pedestrian> *pedestrians;
-		//std::deque<Control> path;
+		std::vector<Pedestrian> pedestrians;
+		std::deque<Control> path;
 
 };
 

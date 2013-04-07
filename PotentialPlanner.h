@@ -16,10 +16,10 @@
 class PotentialPlanner : public Planner {
 	public:
 		//constructor
-		PotentialPlanner(Car* acar, std::vector<Pedestrian>* apedestrians):Planner(acar, apedestrians){}
+		PotentialPlanner(Car* acar, std::vector<Pedestrian> apedestrians):Planner(acar, apedestrians){}
 
 		//public functions
-		std::deque<Control>* plan();
+		void plan(std::vector<Pedestrian> apedestrians);
 
 	protected:
 
@@ -33,7 +33,7 @@ class PotentialPlanner : public Planner {
 			dd x;
 			dd y;
 			dd q;
-		}
+		} ;
 
 		Vector2D addVector2D(Vector2D a, Vector2D b) {
 			Vector2D c;
@@ -56,7 +56,11 @@ class PotentialPlanner : public Planner {
 		//private functions
 		bool isDangerous(State astate);
 		//Vector2D calcPartialForce(State astate);
-		void calcTotalForce(State astate);
+		dd dYForce(State astate);
+		dd sYForce(State astate);
+		dd goalForce();
+		dd calcYForce(State astate);
+		void calcTotalForce();
 		Control convertForceToControl(Vector2D f);
 
 };
