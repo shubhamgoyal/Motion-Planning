@@ -1,6 +1,9 @@
 #ifndef CAR
 #define CAR
 #include <deque>
+#include <GL/glut.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include "Object.h"
 #define CARLENGTH 3
@@ -28,9 +31,9 @@ class Car: public Object {
 			carWidth = w;
 		};
 
-		void update(){
-			state.x += getXDot()*timeStep;
-			state.y += getYDot()*timeStep;
+		void update(dd time_step){
+			state.x += getXDot()*time_step;
+			state.y += getYDot()*time_step;
 		}
 
 		void control(){
@@ -46,6 +49,12 @@ class Car: public Object {
 
 			state.v += curControl.h1;
 			state.theta += state.v*tan(curControl.h2)/carLength;
+			if (state.v < 0) state.v = 0;
+		}
+
+		void control(dd h1, dd h2){
+			state.v += h1;
+			state.theta += state.v*tan(h2)/carLength;
 		}
 
 		dd getLength(){
@@ -61,6 +70,19 @@ class Car: public Object {
 			path = apath;
 		}
 
+		void draw()
+		{
+			glPushMatrix();
+			glTranslatef(state.x,state.y,0);
+			glRotatef(state.theta*180/M_PI,0,0,1);
+			glBegin(GL_QUADS);
+			glVertex2f(-carWidth/2,-carLength/2);
+			glVertex2f(carWidth/2,-carLength/2);
+			glVertex2f(carWidth/2,carLength/2);
+			glVertex2f(-carWidth/2,carLength/2);
+			glEnd();
+			glPopMatrix();
+		}
 
 	private:
 		dd carLength = CARLENGTH;

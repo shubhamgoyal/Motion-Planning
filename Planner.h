@@ -11,6 +11,8 @@
 class Planner {
 	public:
 		//Constructor
+		Planner(){};
+
 		Planner(Car* acar, std::vector<Pedestrian> apedestrians){
 			car = acar;
 			pedestrians = apedestrians;
