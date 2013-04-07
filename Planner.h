@@ -17,12 +17,14 @@ class Planner {
 		};
 
 		//Public functions
-		std::deque<Control>* plan();
+		//plan function will update the list of control from the 
+		//car class (car->path).
+		void plan(std::vector<Pedestrian> *apedestrians);
 
 	protected:
 		Car *car;
 		std::vector<Pedestrian> *pedestrians;
-		std::deque<Control> path;
+		//std::deque<Control> path;
 
 };
 

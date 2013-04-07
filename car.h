@@ -1,11 +1,13 @@
+#include <deque>
+
 #include "Object.h"
+#define CARLENGTH 3
+#define CARWIDTH 1.6
+
 
 class Car: public Object {
 	public:
-		Car():Object(){
-			carLength = 5;
-			carWidth = 2;
-		}
+		Car():Object(){}
 
 		Car(dd l, dd w):Object(){
 			carLength = l;
@@ -17,10 +19,7 @@ class Car: public Object {
 			carWidth = w;
 		};
 
-		Car(State astate):Object(astate){
-			carLength = 5;
-			carWidth = 2;
-		};
+		Car(State astate):Object(astate){};
 
 		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta){
 			carLength = l;
@@ -37,7 +36,16 @@ class Car: public Object {
 			state.theta += state.v*tan(h2)/carLength;
 		}
 
+		dd getLength(){
+			return carLength;
+		}
+
+		dd getWidth(){
+			return carWidth;
+		}
+
 	private:
-		dd carLength;
-		dd carWidth;
+		dd carLength = CARLENGTH;
+		dd carWidth = CARWIDTH;
+		std::deque <Control> path;
 };
