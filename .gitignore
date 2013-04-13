@@ -37,6 +37,8 @@ Icon?
 ehthumbs.db
 Thumbs.db
 *.swp
+Makefile
+*.sh
 
 # Result from merging #
 #######################

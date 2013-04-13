@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <GL/glut.h>
 #include "Object.h"
 #include "pedestrian_actions.h"
 #include "pedestrian_behavior.h"
@@ -15,8 +16,9 @@ protected:
 	Pedestrian_Behavior behavior;
 
 public:
-	Pedestrian(Pedestrian_Behavior behavior, long long int timeSteps);
+	Pedestrian(State astate, Pedestrian_Behavior behavior, long long int timeSteps);
 	void update_state(double time_step);
+	void draw();
 };
 
 #endif

@@ -26,11 +26,12 @@ void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions,
 
 void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::action> &actions, State& pedestrian_state) {
 	printf("In insert goal\n");
-	int goal_type = (getRand() % 4) + 1;
+	int goal_type = (getRand() % 100) + 1;
 	/*DEBUG*/
 	//goal_type = 1;
 	printf("Goal type is %d\n", goal_type);
 	/**/
+	/*
 	switch (goal_type) {
 		case 1:
 			insert_long_term_exit(actions, pedestrian_state);
@@ -47,6 +48,25 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 		default:
 			printf("Wrong value sampled\n");
 	}
+	*/
+	
+	if (goal_type >0 && goal_type < 5)
+	{
+		insert_long_term_exit(actions, pedestrian_state);
+	}
+	else if (goal_type < 45)
+	{
+		insert_long_term_walk_same_pavement(actions, pedestrian_state);
+	}
+	else if (goal_type < 90)
+	{
+		insert_long_term_walk_opposite_pavement(actions, pedestrian_state);
+	}
+	else if (goal_type <=100)
+	{
+		insert_long_term_stop(actions);
+	}
+	else printf("Wrong value sampled\n");
 }
 
 void Pedestrian_Behavior::insert_long_term_exit(std::queue<pedestrian::action> &actions, State& pedestrian_state) {

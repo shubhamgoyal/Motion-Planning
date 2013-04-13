@@ -2,12 +2,12 @@
 #define CAR
 #include <deque>
 #include <GL/glut.h>
-#define _USE_MATH_DEFINES
-#include <cmath>
+//#define _USE_MATH_DEFINES
+//#include <cmath>
 
 #include "Object.h"
-#define CARLENGTH 3
-#define CARWIDTH 1.6
+//#define CARLENGTH 3
+//#define CARWIDTH 1.6
 
 
 class Car: public Object {
