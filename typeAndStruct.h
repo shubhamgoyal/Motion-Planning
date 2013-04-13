@@ -10,9 +10,4 @@ struct State {
 	dd theta;
 } ;
 
-struct Control {
-	dd h1;
-	dd h2;
-} ;
-
 #endif

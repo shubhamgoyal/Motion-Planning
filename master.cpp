@@ -1,18 +1,21 @@
 #include "master.h"
-
-#define NUMBER_OF_PEDESTRIANS 2
-#define NUMBER_OF_TIMESTEPS 100
-#define TIME_STEP_DURATION 0.1
+#include <cstdio>
 
 void initialize_environment() {
+	printf("-----INITIALIZE-----\n");
 	for (int i = 0; i < NUMBER_OF_PEDESTRIANS; i++) {
-		pedestrians.push_back(Pedestrian());
+		printf("%d\n",i);
+		pedestrians.push_back( *(new Pedestrian( *(new Pedestrian_Behavior()), NUMBER_OF_TIMESTEPS)));
 	}
 }
 
 void execute() {
+	printf("-----EXECUTE-----\n");
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
-		pedestrians[i].update_state(TIME_STEP_DURATION);
+		printf("%d\n",i);
+		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
+			pedestrians[j].update_state(TIME_STEP_DURATION);
+		}
 	}
 }
 
