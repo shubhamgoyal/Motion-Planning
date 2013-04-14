@@ -11,6 +11,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <random>
+#include <pthread.h>
 
 int getRandomInt()
 {
@@ -81,18 +82,93 @@ static void Draw(void)
 	glFlush();
 }
 
+void* planning(void* args)
+{
+	while (1)
+	{
+		planner.plan(pedestrians);
+	}
+	return NULL;
+}
+
+void* updateStates(void* args)
+{
+	while (1)
+	{
+		planner.plan(pedestrians);
+		for (int i=0;i<pedestrians.size();++i)
+		{
+			pedestrians[i].update_state(0.1);
+		}
+		car.control();
+		car.update_state(0.1);
+	}
+	return NULL;
+}
+
+void UPDATESTATES()
+{
+	while (1)
+	{
+		planner.plan(pedestrians);
+		for (int i=0;i<pedestrians.size();++i)
+		{
+			pedestrians[i].update_state(0.1);
+		}
+		car.control();
+		car.update_state(0.1);
+	}
+}
+
 static void update(int value)
 {
 	//if (car.getV() < 0.4) car.control(0.01,0.1);
+	/*
 	planner.plan(pedestrians);
 	for (int i=0;i<pedestrians.size();++i)
 	{
 		pedestrians[i].update_state(0.1);
 	}
 	car.control();
-	car.update(0.1);
+	car.update_state(0.1);
+	*/
 	glutPostRedisplay();
 	glutTimerFunc(20,update,0);
+}
+
+void GUI()
+{
+
+	//drawing
+	//glutInit(&argc, argv);
+	int test=0;
+	glutInit(&test,NULL);
+   glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
+   glutInitWindowSize(300, 500);
+   glutCreateWindow("Accum Test");
+   Init();
+   glutReshapeFunc(Reshape);
+   glutDisplayFunc(Draw);
+	glutTimerFunc(20,update,0);
+   glutMainLoop();
+}
+
+void* gui(void* args)
+{
+
+	//drawing
+	//glutInit(&argc, argv);
+	int test=0;
+	glutInit(&test,NULL);
+   glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
+   glutInitWindowSize(300, 500);
+   glutCreateWindow("Accum Test");
+   Init();
+   glutReshapeFunc(Reshape);
+   glutDisplayFunc(Draw);
+	glutTimerFunc(20,update,0);
+   glutMainLoop();
+	return NULL;
 }
 
 int main(int argc, char **argv)
@@ -121,18 +197,18 @@ int main(int argc, char **argv)
 		pedestrians.push_back(Pedestrian(getRandomPedestrianState(),Pedestrian_Behavior(),NUMBER_OF_TIMESTEPS));
 	}	
 
-	planner = SimplePlanner(&car, pedestrians);
+	planner = SimplePlanner(car, pedestrians);
+	pthread_t threadUpdate;
+	pthread_t threadPlan;
+	pthread_t threadGUI;
+	//pthread_create(&threadUpdate,NULL,&updateStates,NULL);
+	//pthread_create(&threadPlan, NULL, &planning, NULL);
+	pthread_create(&threadGUI,NULL,&gui,NULL);
+	
+	UPDATESTATES();
+	
+	//GUI();
 
-	//drawing
-	glutInit(&argc, argv);
-   glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
-   glutInitWindowSize(300, 500);
-   glutCreateWindow("Accum Test");
-   Init();
-   glutReshapeFunc(Reshape);
-   glutDisplayFunc(Draw);
-	glutTimerFunc(20,update,0);
-   glutMainLoop();
 
 	return 0;
 }

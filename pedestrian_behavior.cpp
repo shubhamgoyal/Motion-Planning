@@ -20,6 +20,9 @@ void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions,
 	/**/
 	pedestrian_state.x = pedestrian_state.x + next_action.x_velocity * time_step;
 	pedestrian_state.y = pedestrian_state.y + next_action.y_velocity * time_step;
+	pedestrian_state.v = sqrt((next_action.x_velocity)*(next_action.x_velocity) +(next_action.y_velocity) *(next_action.y_velocity));
+	pedestrian_state.theta = atan2(next_action.y_velocity, next_action.x_velocity);
+
 	assert(!actions.empty());
 	actions.pop();
 }

@@ -13,8 +13,9 @@ class Planner {
 		//Constructor
 		Planner(){};
 
-		Planner(Car* acar, std::vector<Pedestrian> apedestrians){
-			car = acar;
+		Planner(Car &acar, std::vector<Pedestrian> apedestrians){
+			car = &acar;
+			path = car->getPath();
 			pedestrians = apedestrians;
 		};
 
@@ -27,7 +28,7 @@ class Planner {
 	protected:
 		Car *car;
 		std::vector<Pedestrian> pedestrians;
-		std::deque<Control> path;
+		std::deque<Control> *path;
 
 };
 

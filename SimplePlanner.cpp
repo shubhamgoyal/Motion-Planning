@@ -1,13 +1,15 @@
 #include "SimplePlanner.h"
+#include <cstdio>
 
-int min(double a, double b)
+double min(double a, double b)
 {
 	return a>b?b:a;
 }
 
 bool SimplePlanner::isDangerous(State astate)
 {
-   if ( astate.y > car->getY() + car->getLength()/2) {
+   
+	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+50) {
       dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
       //tt is the rough estimate on time needed for the car to 
       //reach the pedestrian y position
@@ -25,31 +27,38 @@ bool SimplePlanner::isDangerous(State astate)
    return false;
 }
 
-bool SimplePlanner::existDangerous()
+bool SimplePlanner::existDangerous(std::vector<Pedestrian> &apedestrians)
 {
-	for (int i=0;i<pedestrians.size();++i)
+	for (int i=0;i<apedestrians.size();++i)
 	{
-		if (isDangerous(pedestrians[i].getState()))
+		if (isDangerous(apedestrians[i].getState()))
 				return true;
 	}
 	return false;
 }
 
-void SimplePlanner::plan(std::vector<Pedestrian> apedestrians){
-	pedestrians = apedestrians;
+void SimplePlanner::plan(std::vector<Pedestrian> &apedestrians){
+	std::deque<Control>tempPath;
+	//pedestrians = &apedestrians;
 	dd maxV = 5;
 	dd maxTheta = 0.1;
 	Control c;
 	c.h1 = 0;
 	c.h2 = 0;
-	if (existDangerous())
+	if (existDangerous(apedestrians))
 	{
-		if (car->getV() > 0) c.h1 = -1*min(1,car->getV());
+		c.h1 = -1*min(1,car->getV());
+		/* debug */
+		//printf("-------DANGEROUS!!!--------## v: %lf, decel: %lf\n",car->getV(),c.h1);
 	}
-	else
-		if (car->getV() < maxV) c.h1 = 0.1;
+	else if (car->getV() < maxV) c.h1 = 0.1;
+	else if (car->getV() >=maxV) c.h1=0;
 
-	path.push_back(c);
-	car->setPath(path);
+	
+	tempPath.push_back(c);
+	pthread_mutex_lock(&car->mutex_path);
+	path->swap(tempPath);
+	pthread_mutex_unlock(&car->mutex_path);
+	//car->setPath(path);
 	
 }

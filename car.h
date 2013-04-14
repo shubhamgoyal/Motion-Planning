@@ -6,32 +6,40 @@
 //#include <cmath>
 
 #include "Object.h"
+#include <pthread.h>
 //#define CARLENGTH 3
 //#define CARWIDTH 1.6
 
 
 class Car: public Object {
 	public:
-		Car():Object(){}
+		Car():Object(){
+		pthread_mutex_init(&mutex_path, NULL);
+		}
 
 		Car(dd l, dd w):Object(){
+			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
 		Car(State astate, dd l, dd w):Object(astate){
+			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
-		Car(State astate):Object(astate){};
+		Car(State astate):Object(astate){
+			pthread_mutex_init(&mutex_path, NULL);
+		};
 
 		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta){
+			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
-		void update(dd time_step){
+		void update_state(dd time_step){
 			state.x += getXDot()*time_step;
 			state.y += getYDot()*time_step;
 		}
@@ -39,8 +47,10 @@ class Car: public Object {
 		void control(){
 			Control curControl;
 			if (!path.empty()) {
+				pthread_mutex_lock (&mutex_path);
 				curControl = path.front();
 				path.pop_front();
+				pthread_mutex_unlock (&mutex_path);
 			}
 			else {
 				curControl.h1 = 0;
@@ -65,9 +75,17 @@ class Car: public Object {
 			return carWidth;
 		}
 
-		void setPath(std::deque <Control> apath)
+		std::deque <Control>*  getPath()
 		{
+			return &path;
+		}
+
+		void setPath(std::deque <Control> &apath)
+		{
+			pthread_mutex_lock (&mutex_path);
 			path = apath;
+			pthread_mutex_unlock (&mutex_path);
+
 		}
 
 		void draw()
@@ -84,10 +102,14 @@ class Car: public Object {
 			glPopMatrix();
 		}
 
+	public:
+		pthread_mutex_t mutex_path;
+
 	private:
 		dd carLength = CARLENGTH;
 		dd carWidth = CARWIDTH;
 		std::deque <Control> path;
+
 };
 
 #endif
