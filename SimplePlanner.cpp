@@ -39,19 +39,22 @@ bool SimplePlanner::existDangerous(std::vector<Pedestrian> &apedestrians)
 
 void SimplePlanner::plan(std::vector<Pedestrian> &apedestrians){
 	std::deque<Control>tempPath;
-	//pedestrians = &apedestrians;
-	dd maxV = 5;
+	//pedestrians = apedestrians;
+
+	dd maxV = 10;
 	dd maxTheta = 0.1;
+	dd breakAccel = 1;
+	dd speedAccel = 0.5;
 	Control c;
 	c.h1 = 0;
 	c.h2 = 0;
 	if (existDangerous(apedestrians))
 	{
-		c.h1 = -1*min(1,car->getV());
+		c.h1 = -1*min(breakAccel,car->getV());
 		/* debug */
 		//printf("-------DANGEROUS!!!--------## v: %lf, decel: %lf\n",car->getV(),c.h1);
 	}
-	else if (car->getV() < maxV) c.h1 = 0.1;
+	else if (car->getV() < maxV) c.h1 = speedAccel;
 	else if (car->getV() >=maxV) c.h1=0;
 
 	

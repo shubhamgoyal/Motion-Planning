@@ -36,7 +36,7 @@ struct zebra_crossing {
 
 #define NUMBER_OF_PEDESTRIANS 100
 #define NUMBER_OF_TIMESTEPS 1000000
-#define TIME_STEP_DURATION 0.1
+#define TIME_STEP_DURATION 0.001
 
 class Environment
 {

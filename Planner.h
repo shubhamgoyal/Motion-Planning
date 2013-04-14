@@ -23,7 +23,7 @@ class Planner {
 		/* plan function will update the list of control from the 
 			car class (car->setPath()). 
 		 */
-		void plan(std::vector<Pedestrian> apedestrians);
+		void plan(std::vector<Pedestrian> &apedestrians);
 
 	protected:
 		Car *car;
