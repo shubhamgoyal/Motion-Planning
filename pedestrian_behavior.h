@@ -81,10 +81,12 @@ protected:
 	void insert_long_term_stop(std::queue<pedestrian::action> &actions);
 	double sample_random(double min_value, double max_value);
 	double sample_normal_random(double min_value, double max_value, double mean, double stddev);
+	int isExit;
 public:
 	Environment environment;
 	Pedestrian_Behavior()
 	{
+		isExit = 0;
 		environment = Environment();
 
 	};
@@ -101,6 +103,7 @@ private:
 		}
 		return rand();
 	}
+
 
 };
 	

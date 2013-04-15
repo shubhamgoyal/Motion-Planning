@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "PotentialPlanner.h"
 
 bool PotentialPlanner::isDangerous(State astate)
@@ -70,9 +71,9 @@ void PotentialPlanner::calcTotalForce()
 	//get the pedestrian that give max force in Y direction
 	dd maxYForce = 0;
 	int maxInd = -1;
-	for (int i=0;i<pedestrians.size();++i)
+	for (int i=0;i<pedestrians->size();++i)
 	{
-		dd yForce = calcYForce(pedestrians[i].getState());
+		dd yForce = calcYForce((*pedestrians)[i].getState());
 		if(maxYForce < yForce)
 		{
 			maxYForce = yForce;
@@ -89,17 +90,23 @@ Control PotentialPlanner::convertForceToControl(Vector2D f)
 {
 	//For temporary only. Only consider y direction.
 	Control c;
-	c.h1 = force.y;
+	c.h1 = force.y/1000;
 	c.h2 = 0;
 	return c;
 }
 
-void PotentialPlanner::plan(std::vector<Pedestrian> apedestrians)
+void PotentialPlanner::plan(std::vector<Pedestrian> &apedestrians)
 {
-	pedestrians = apedestrians;
+	std::deque<Control> tempPath;
+
+	pedestrians = &apedestrians;
 	calcTotalForce();
-	path.push_back(convertForceToControl(force));
-	car->setPath(path);
+	tempPath.push_back(convertForceToControl(force));
+	//path.push_back(convertForceToControl(force));
+	pthread_mutex_lock(&car->mutex_path);
+	//car->setPath(path);
+	path->swap(tempPath);
+	pthread_mutex_unlock(&car->mutex_path);
 
 }
 

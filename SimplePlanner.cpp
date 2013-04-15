@@ -39,7 +39,7 @@ bool SimplePlanner::existDangerous(std::vector<Pedestrian> &apedestrians)
 
 void SimplePlanner::plan(std::vector<Pedestrian> &apedestrians){
 	std::deque<Control>tempPath;
-	//pedestrians = apedestrians;
+	//pedestrians= apedestrians;
 
 	dd maxV = 10;
 	dd maxTheta = 0.1;

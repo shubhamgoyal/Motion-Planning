@@ -6,6 +6,7 @@
 #include <vector>
 
 void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state) {
+	if (isExit && actions.empty()) return;
 	if (actions.empty()) {
 		insert_new_long_term_goal(actions, pedestrian_state);
 	}
@@ -57,7 +58,7 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 	{
 		insert_long_term_exit(actions, pedestrian_state);
 	}
-	else if (goal_type < 45)
+	else if (goal_type < 60)
 	{
 		insert_long_term_walk_same_pavement(actions, pedestrian_state);
 	}
@@ -101,6 +102,7 @@ void Pedestrian_Behavior::insert_long_term_exit(std::queue<pedestrian::action> &
 		pedestrian::action new_action = {0.0, 0.0};
 		actions.push(new_action);
 	}
+	isExit=1;
 }
 
 double Pedestrian_Behavior::sample_random(double min_value, double max_value) {

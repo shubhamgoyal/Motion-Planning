@@ -11,11 +11,10 @@ class SimplePlanner:public Planner {
 
 		//public function
 		void plan(std::vector<Pedestrian> &apedestrians);
-
 	protected:
 		bool isDangerous(State astate);
 		bool existDangerous(std::vector<Pedestrian> &apedestrians);
-
+		//bool existDangerous();
 
 };
 

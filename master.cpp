@@ -24,7 +24,7 @@ static void Reshape(int width, int height)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(-1,-1,0);
-    glScalef(1.0/20,1.0/500,1);
+    glScalef(1.0/10,1.0/300,1);
 }
 
 static void Draw(void)
@@ -51,12 +51,12 @@ void* gui(void* args) {
 	int tempZero=0;
    glutInit(&tempZero, NULL);
    glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
-   glutInitWindowSize(300, 500);
+   glutInitWindowSize(300, 700);
    glutCreateWindow("Accum Test");
    Init();
    glutReshapeFunc(Reshape);
    glutDisplayFunc(Draw);
-   glutTimerFunc(1,update,0);
+   glutTimerFunc(10,update,0);
    glutMainLoop();
 	return NULL;
 }
@@ -103,7 +103,8 @@ void initialize_environment() {
 	}
 	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
 	car = Car(initialCarState, CARLENGTH, CARWIDTH);
-	planner = SimplePlanner(car, pedestrians);
+	//planner = SimplePlanner(car, pedestrians);
+	planner = PotentialPlanner(car, pedestrians);
 }
 
 void execute() {
@@ -117,6 +118,7 @@ void execute() {
 		car.control();
 		car.update_state(TIME_STEP_DURATION);
 	}
+	execute();
 }
 
 void* control(void* args) {
