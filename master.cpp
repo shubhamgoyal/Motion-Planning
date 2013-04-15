@@ -103,8 +103,8 @@ void initialize_environment() {
 	}
 	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
 	car = Car(initialCarState, CARLENGTH, CARWIDTH);
-	//planner = SimplePlanner(car, pedestrians);
-	planner = PotentialPlanner(car, pedestrians);
+	planner = SimplePlanner(car, pedestrians);
+	//planner = PotentialPlanner(car, pedestrians);
 }
 
 void execute() {

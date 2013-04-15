@@ -94,6 +94,7 @@ class Car: public Object {
 
 		void draw()
 		{
+			glColor3f(1.0,1.0,1.0);
 			glPushMatrix();
 			glTranslatef(state.x,state.y,0);
 			glRotatef(state.theta*180/M_PI,0,0,1);

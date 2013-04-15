@@ -9,7 +9,7 @@ typedef double dd;
 #include<cmath>
 
 //for car
-#define CARLENGTH 3
+#define CARLENGTH 3.0
 #define CARWIDTH 1.6
 
 //for pedestrian

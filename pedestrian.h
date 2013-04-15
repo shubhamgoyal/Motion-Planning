@@ -14,11 +14,20 @@ protected:
 	//std::vector<pedestrian::action> actions;
 	std::queue<pedestrian::action> actions;
 	Pedestrian_Behavior behavior;
+	int color;
 
 public:
 	Pedestrian(State astate, Pedestrian_Behavior behavior, long long int timeSteps);
 	void update_state(double time_step);
 	void draw();
+	int getColor()
+	{
+		return color;
+	}
+	void setColor(int c)
+	{
+		color=c;
+	}
 };
 
 #endif
