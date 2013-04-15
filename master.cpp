@@ -23,16 +23,51 @@ static void Reshape(int width, int height)
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(-1,-1,0);
-    glScalef(1.0/10,1.0/300,1);
+	 glRotatef(90.0,0,0,1.0);
+    glTranslatef(-0.5,-1,0);
+    glScalef(50.0/height,50.0/width,1);
 }
 
 static void Draw(void)
 {
    glClear(GL_COLOR_BUFFER_BIT);
+
+	/*Draw environment*/
+	glPushMatrix();
+	glTranslatef(0,-car.getY() + 10,0);
+	glColor3f(0.6,0.8,0.195);
+	glBegin(GL_QUADS);
+		glVertex2f(X_MIN,Y_MIN);
+		glVertex2f(X_MIN,Y_MAX);
+		glVertex2f(X_MAX,Y_MAX);
+		glVertex2f(X_MAX,Y_MIN);
+	glEnd();
+	glColor3f(0.63,0.32,0.18);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
+	glEnd();
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MIN);
+	glEnd();
+	glColor3f(0.3,0.3,0.3);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
+	glEnd();
+
+	/*Draw object*/
    car.draw();
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
+	glPopMatrix();
 
    glutSwapBuffers();
    glFlush();
@@ -51,8 +86,9 @@ void* gui(void* args) {
 	int tempZero=0;
    glutInit(&tempZero, NULL);
    glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
-   glutInitWindowSize(300, 700);
-   glutCreateWindow("Accum Test");
+   //glutInitWindowSize(300, 700);
+   glutInitWindowSize(WINDOW_X_SIZE,WINDOW_Y_SIZE);
+	glutCreateWindow("Accum Test");
    Init();
    glutReshapeFunc(Reshape);
    glutDisplayFunc(Draw);
@@ -112,7 +148,7 @@ void execute() {
 	printf("-----EXECUTE-----\n");
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		//debug
-		printf("%d\n",i);
+		printf("%d, carV: %lf, carTheta: %lf\n",i,car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI);
 		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
 			pedestrians[j].update_state(TIME_STEP_DURATION);
 		}

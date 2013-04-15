@@ -7,7 +7,7 @@
 
 #include "Object.h"
 #include <pthread.h>
-//#define CARLENGTH 3
+//#define CARLENGTH 3.0
 //#define CARWIDTH 1.6
 
 
@@ -97,12 +97,12 @@ class Car: public Object {
 			glColor3f(1.0,1.0,1.0);
 			glPushMatrix();
 			glTranslatef(state.x,state.y,0);
-			glRotatef(state.theta*180/M_PI,0,0,1);
+			glRotatef(state.theta*180.0/M_PI,0,0,1);
 			glBegin(GL_QUADS);
-			glVertex2f(-carWidth/2,-carLength/2);
-			glVertex2f(carWidth/2,-carLength/2);
-			glVertex2f(carWidth/2,carLength/2);
-			glVertex2f(-carWidth/2,carLength/2);
+			glVertex2f(-carLength/2,-carWidth/2);
+			glVertex2f(carLength/2,-carWidth/2);
+			glVertex2f(carLength/2,carWidth/2);
+			glVertex2f(-carLength/2,carWidth/2);
 			glEnd();
 			glPopMatrix();
 		}

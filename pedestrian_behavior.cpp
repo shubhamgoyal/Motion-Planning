@@ -53,12 +53,14 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 			printf("Wrong value sampled\n");
 	}
 	*/
+
+	int chanceCross=45;
 	
 	if (goal_type >0 && goal_type < 5)
 	{
 		insert_long_term_exit(actions, pedestrian_state);
 	}
-	else if (goal_type < 45)
+	else if (goal_type < 90-chanceCross)
 	{
 		insert_long_term_walk_same_pavement(actions, pedestrian_state);
 	}
@@ -97,11 +99,13 @@ void Pedestrian_Behavior::insert_long_term_exit(std::queue<pedestrian::action> &
 		pedestrian::action new_action = {random_velocity, 0.0};
 		actions.push(new_action);
 	}
+	/*
 	for (int i=0;i <NUMBER_OF_TIMESTEPS;++i)
 	{
 		pedestrian::action new_action = {0.0, 0.0};
 		actions.push(new_action);
 	}
+	*/
 	isExit=1;
 }
 

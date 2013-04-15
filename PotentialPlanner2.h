@@ -43,7 +43,7 @@ class PotentialPlanner2 : public Planner {
 			return c;
 		}
 
-		void setVector2D(Vector2D v, dd x, dd y)
+		void setVector2D(Vector2D &v, dd x, dd y)
 		{
 			v.x = x;
 			v.y = y;

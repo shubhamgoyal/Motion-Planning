@@ -12,6 +12,10 @@ from left to right while the y co-ordinate increases from the bottom to top.
 #ifndef ENVIRONMENT
 #define ENVIRONMENT
 
+#define WINDOW_X_SIZE 2000
+#define WINDOW_Y_SIZE 700
+
+
 #define X_MIN 0
 #define X_MAX 15
 #define Y_MIN 0
