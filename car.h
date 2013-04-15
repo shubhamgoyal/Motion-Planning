@@ -14,7 +14,9 @@
 class Car: public Object {
 	public:
 		Car():Object(){
-		pthread_mutex_init(&mutex_path, NULL);
+			pthread_mutex_init(&mutex_path, NULL);
+			carLength = CARLENGTH;
+			carWidth = CARWIDTH;
 		}
 
 		Car(dd l, dd w):Object(){
@@ -31,6 +33,8 @@ class Car: public Object {
 
 		Car(State astate):Object(astate){
 			pthread_mutex_init(&mutex_path, NULL);
+			carLength = CARLENGTH;
+			carWidth = CARWIDTH;
 		};
 
 		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta){
@@ -106,8 +110,8 @@ class Car: public Object {
 		pthread_mutex_t mutex_path;
 
 	private:
-		dd carLength = CARLENGTH;
-		dd carWidth = CARWIDTH;
+		dd carLength;
+		dd carWidth;
 		std::deque <Control> path;
 
 };

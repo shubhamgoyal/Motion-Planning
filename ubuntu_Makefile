@@ -1,0 +1,31 @@
+CFLAGS=-std=c++0x -g -lpthread
+GLFLAGS=-lglut -lGLU -lGL
+
+
+all: master.exe master.o SimplePlanner.o pedestrian_behavior.o environment.o pedestrian.o car.o 
+
+master.exe: master.o car.o pedestrian.o SimplePlanner.o pedestrian_behavior.o environment.o
+	g++ master.o car.o pedestrian.o SimplePlanner.o pedestrian_behavior.o environment.o -o master.exe $(CFLAGS) $(GLFLAGS)
+
+master.o: master.cpp
+	g++ master.cpp -c $(CFLAGS) $(GLFLAGS)
+
+
+SimplePlanner.o: SimplePlanner.cpp
+	g++ -c SimplePlanner.cpp $(CFLAGS) 
+
+pedestrian_behavior.o: pedestrian_behavior.cpp
+	g++ -c pedestrian_behavior.cpp $(CFLAGS)
+
+pedestrian.o: pedestrian.cpp
+	g++ -c pedestrian.cpp $(CFLAGS) $(GLFLAGS)
+
+environment.o: environment.cpp
+	g++ -c environment.cpp $(CFLAGS) $(GLFLAGS)
+
+car.o: car.cpp
+	g++ -c car.cpp $(CFLAGS) $(GLFLAGS)
+
+
+clean: 
+	rm *.o *.exe

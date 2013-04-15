@@ -41,11 +41,25 @@ struct zebra_crossing {
 class Environment
 {
 	public:
-		Environment(){};
-		zebra_crossing zebra_1 = {124, 126, 2.5, 12.5, 2};
-		zebra_crossing zebra_2 = {374, 376, 2.5, 12.5, 2};
-		zebra_crossing zebra_crossings [2]= {zebra_1, zebra_2};
-
+		Environment()
+		{
+			set_zebra_cross(zebra_crossings[0],124,126,2.5,12.5,2);
+			set_zebra_cross(zebra_crossings[1],374,376,2.5,12.5,2);
+		};
+		//zebra_crossing zebra_1 = {124, 126, 2.5, 12.5, 2};
+		//zebra_crossing zebra_2 = {374, 376, 2.5, 12.5, 2};
+		//zebra_crossing zebra_crossings [2]= {zebra_1, zebra_2};
+		zebra_crossing zebra_crossings[2];
+		
+	protected:
+		void set_zebra_cross(zebra_crossing &z, double y_min, double y_max, double x_min, double x_max, double width)
+	{
+		z.y_min = y_min;
+		z.y_max = y_max;
+		z.x_min = x_min;
+		z.x_max = x_max;
+		z.width = width;
+	}
 };
 
 
