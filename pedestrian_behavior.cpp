@@ -58,7 +58,7 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 	{
 		insert_long_term_exit(actions, pedestrian_state);
 	}
-	else if (goal_type < 60)
+	else if (goal_type < 45)
 	{
 		insert_long_term_walk_same_pavement(actions, pedestrian_state);
 	}
