@@ -5,10 +5,10 @@
 #include <random>
 #include <vector>
 
-void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type) {
+void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state) {
 	if (isExit && actions.empty()) return;
-	if (action_type==0 || actions.empty() ) {
-		insert_new_long_term_goal(actions, pedestrian_state, action_type);
+	if (actions.empty()) {
+		insert_new_long_term_goal(actions, pedestrian_state);
 	}
 	pedestrian::action next_action = actions.front();
 	/*if (next_action.is_short_term_stop) {
@@ -25,15 +25,10 @@ void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions,
 	pedestrian_state.theta = atan2(next_action.y_velocity, next_action.x_velocity);
 
 	assert(!actions.empty());
-	if (next_action.time_steps_left >= 1) actions.front().time_steps_left--;
-	else 
-	{
-		if (!actions.empty()) actions.pop();
-		else action_type=0;
-	}
+	actions.pop();
 }
 
-void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::action> &actions, State& pedestrian_state, int& action_type) {
+void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::action> &actions, State& pedestrian_state) {
 	printf("In insert goal\n");
 	int goal_type = (getRand() % 100) + 1;
 	/*DEBUG*/
@@ -63,22 +58,18 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 	
 	if (goal_type >0 && goal_type < 5)
 	{
-		action_type=-1;
 		insert_long_term_exit(actions, pedestrian_state);
 	}
 	else if (goal_type < 90-chanceCross)
 	{
-		action_type=1;
 		insert_long_term_walk_same_pavement(actions, pedestrian_state);
 	}
 	else if (goal_type < 90)
 	{
-		action_type=2;
 		insert_long_term_walk_opposite_pavement(actions, pedestrian_state);
 	}
 	else if (goal_type <=100)
 	{
-		action_type=3;
 		insert_long_term_stop(actions);
 	}
 	else printf("Wrong value sampled\n");
@@ -103,18 +94,11 @@ void Pedestrian_Behavior::insert_long_term_exit(std::queue<pedestrian::action> &
 	printf("num_time_steps_needed: %d\n",num_time_steps_needed);
 	printf("target_x: %lf, pedestrian_state.x: %lf\nrandom_velocity: %lf\n",target_x, pedestrian_state.x, random_velocity);
 	/**/
-	/* CHANGED!!
+	
 	for (int i = 0; i < num_time_steps_needed; i++) {
 		pedestrian::action new_action = {random_velocity, 0.0};
 		actions.push(new_action);
 	}
-	*/
-	pedestrian::action new_action = {random_velocity, 0.0, num_time_steps_needed};
-	actions.push(new_action);
-	//JUST TO MAKE SURE THAT THE PEDESTRIAN IS STOPPING
-	pedestrian::action new_action2 = {0.0,0.0,100};
-	actions.push(new_action2);
-
 	/*
 	for (int i=0;i <NUMBER_OF_TIMESTEPS;++i)
 	{
@@ -157,15 +141,10 @@ void Pedestrian_Behavior::insert_long_term_walk_same_pavement(std::queue<pedestr
 	int num_time_steps_needed = (int)ceil(((sample_goal_location_y - pedestrian_state.y) / random_velocity)/TIME_STEP_DURATION);
 	num_time_steps_needed = abs(num_time_steps_needed);
 	assert((printf("\ngoal:(%lf,%lf), cur:(%lf,%lf),v:%lf, numStep:%d\n",pedestrian_state.x, sample_goal_location_y, pedestrian_state.x, pedestrian_state.y, random_velocity, num_time_steps_needed ),num_time_steps_needed > 0));
-	
-	/* CHANGED!!	
 	for (int i = 0; i < num_time_steps_needed; i++) {
 		pedestrian::action new_action = {0.0, random_velocity};
 		actions.push(new_action);
 	}
-	*/
-	pedestrian::action new_action = {0.0, random_velocity, num_time_steps_needed};
-	actions.push(new_action);
 }
 
 void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<pedestrian::action> &actions, State& pedestrian_state) {
@@ -250,14 +229,11 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 	if (y_cross < pedestrian_state.y) random_velocity *= -1.0;
 	int num_time_steps_needed = (int)ceil((abs(y_cross - pedestrian_state.y) / random_velocity)/TIME_STEP_DURATION);
 	num_time_steps_needed = abs(num_time_steps_needed);
-/* CHANGED!!	
+	
 	for (int i = 0; i < num_time_steps_needed; i++) {
 		pedestrian::action new_action = {0.0, random_velocity};
 		actions.push(new_action);
 	}
-*/
-	pedestrian::action new_action = {0.0, random_velocity, num_time_steps_needed};
-	actions.push(new_action);
 
 	double random_velocity1 = 0.0;
 	while (random_velocity1 == 0.0) {
@@ -266,14 +242,10 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 	if (sample_goal_location_x < pedestrian_state.x) random_velocity1 *= -1.0;
 	int num_time_steps_needed1 = (int)ceil((abs(sample_goal_location_x - pedestrian_state.x) / random_velocity1)/TIME_STEP_DURATION);
 	num_time_steps_needed1 = abs(num_time_steps_needed1);
-	/* CHANGED!!
 	for (int i = 0; i < num_time_steps_needed1; i++) {
 		pedestrian::action new_action = {random_velocity1, 0.0};
 		actions.push(new_action);
 	}
-	*/
-	pedestrian::action new_action1 = {random_velocity1, 0.0, num_time_steps_needed1};
-	actions.push(new_action1);
 
 	double random_velocity2 = 0.0;
 	while (random_velocity2 == 0.0) {
@@ -282,15 +254,10 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 	if (sample_goal_location_y < y_cross) random_velocity2 *= -1.0;
 	int num_time_steps_needed2 = (int)ceil((abs(sample_goal_location_y - pedestrian_state.y) / random_velocity2)/TIME_STEP_DURATION);
 	num_time_steps_needed2 = abs(num_time_steps_needed2);
-	/* CHANGED!! 
 	for (int i = 0; i < num_time_steps_needed2; i++) {
 		pedestrian::action new_action = {0.0, random_velocity2};
 		actions.push(new_action);
 	}
-	*/
-	pedestrian::action new_action2 = {0.0, random_velocity2, num_time_steps_needed2};
-	actions.push(new_action2);
-
 	assert( (printf("\ncurX:%lf, curY:%lf, cross:%lf, dest: (%lf,%lf)\n v1:%lf, v2:%lf,v3:%lf\nnumStep=%d, numStep1=%d, numStep2=%d\n",pedestrian_state.x, pedestrian_state.y, y_cross, sample_goal_location_x, sample_goal_location_y, random_velocity, random_velocity1, random_velocity2, num_time_steps_needed, num_time_steps_needed1, num_time_steps_needed2), (num_time_steps_needed + num_time_steps_needed1 + num_time_steps_needed2) > 0));
 }
 
@@ -298,12 +265,8 @@ void Pedestrian_Behavior::insert_long_term_stop(std::queue<pedestrian::action> &
 	printf("In long_term_stop\n");
 	int random_steps = (rand() % 101);
 	random_steps += 50;
-	/* CHANGED!!
 	for (int i = 0; i < random_steps; i++) {
 		pedestrian::action new_action = {0.0, 0.0};
 		actions.push(new_action);
 	}
-	*/
-	pedestrian::action new_action = {0.0, 0.0, random_steps};
-	actions.push(new_action);
 }

@@ -36,6 +36,7 @@ static void Draw(void)
 	/*Draw environment*/
 	glPushMatrix();
 	glTranslatef(0,-car.getY() + 10,0);
+	//BACKGROUND GRASS
 	glColor3f(0.6,0.8,0.195);
 	glBegin(GL_QUADS);
 		glVertex2f(X_MIN,Y_MIN);
@@ -43,6 +44,8 @@ static void Draw(void)
 		glVertex2f(X_MAX,Y_MAX);
 		glVertex2f(X_MAX,Y_MIN);
 	glEnd();
+
+	//BACKGROUND PAVEMENT
 	glColor3f(0.63,0.32,0.18);
 	glBegin(GL_QUADS);
 		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MIN);
@@ -56,6 +59,8 @@ static void Draw(void)
 		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MAX);
 		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MIN);
 	glEnd();
+
+	//ROAD
 	glColor3f(0.3,0.3,0.3);
 	glBegin(GL_QUADS);
 		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
@@ -63,6 +68,23 @@ static void Draw(void)
 		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
 		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
 	glEnd();
+
+	//ZEBRA CROSS
+	glColor3f(0.75,0.9,0.9);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MIN);
+	glEnd();
+	glColor3f(0.75,0.9,0.9);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MIN);
+	glEnd();
+
 	/*Draw static lines every 50m*/
 	glColor3f(0.1,0.1,0.1);
 	glBegin(GL_LINES);

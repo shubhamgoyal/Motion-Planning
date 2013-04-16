@@ -12,7 +12,7 @@ namespace pedestrian {
 		//bool is_short_term_stop;
 		double x_velocity;
 		double y_velocity;
-		//int time_steps_left;
+		int time_steps_left;
 	};
 }
 

@@ -15,6 +15,7 @@ protected:
 	std::queue<pedestrian::action> actions;
 	Pedestrian_Behavior behavior;
 	int color;
+	int action_type;
 
 public:
 	Pedestrian(State astate, Pedestrian_Behavior behavior, long long int timeSteps);

@@ -28,6 +28,12 @@ from left to right while the y co-ordinate increases from the bottom to top.
 #define PAVEMENT_LEFT_Y_MAX 500
 #define PAVEMENT_RIGHT_Y_MIN 0
 #define PAVEMENT_RIGHT_Y_MAX 500
+#define ZEBRA1_Y_MIN 124
+#define ZEBRA1_Y_MAX 126
+#define ZEBRA2_Y_MIN 374
+#define ZEBRA2_Y_MAX 376
+
+
 
 #define NUM_ZEBRA_CROSSING 2
 struct zebra_crossing {
@@ -38,7 +44,7 @@ struct zebra_crossing {
 	double width;
 };
 
-#define NUMBER_OF_PEDESTRIANS 300
+#define NUMBER_OF_PEDESTRIANS 500
 #define NUMBER_OF_TIMESTEPS 10000
 #define TIME_STEP_DURATION 5e-3
 
