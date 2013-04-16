@@ -1,6 +1,6 @@
 #include "pedestrian.h"
 
-Pedestrian::Pedestrian(State astate, Pedestrian_Behavior behavior, long long int timeSteps):Object(astate) {
+Pedestrian::Pedestrian(State astate, Pedestrian_Behavior &behavior, long long int timeSteps):Object(astate) {
 	this->behavior = behavior;
 	color = 0;
 	action_type=0;
@@ -19,25 +19,32 @@ void Pedestrian::draw()
 	}
 	else
 	{
-		switch (action_type) {
-			case 0:
-				glColor3f(1.0,1.0,1.0);
-				break;
-			case -1:
-				glColor3f(1.0,1.0,1.0);
-				break;
-			case 1:
-				glColor3f(0.0,0.0,1.0);
-				break;
-			case 2:
-				glColor3f(0.0,1.0,0.0);
-				break;
-			case 3:
-				glColor3f(0.8, 0.8, 0.8);
-				break;
-			default:
-				glColor3f(1.0,1.0,1.0);
-
+		if (action_type >= 10) 
+		{
+			glColor3f(0.0,0.8,1.0);
+		}
+		else
+		{
+			switch (action_type) {
+				case 0:
+					glColor3f(1.0,1.0,1.0);
+					break;
+				case -1:
+					glColor3f(1.0,1.0,1.0);
+					break;
+				case 1:
+					glColor3f(0.0,0.0,1.0);
+					break;
+				case 2:
+					glColor3f(0.0,1.0,0.0);
+					break;
+				case 3:
+					glColor3f(0.8, 0.8, 0.8);
+					break;
+				default:
+					glColor3f(1.0,1.0,1.0);
+	
+			}
 		}
 	}
 	glPushMatrix();

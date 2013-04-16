@@ -169,10 +169,10 @@ void initialize_environment() {
 	printf("-----INITIALIZE-----\n");
 	for (int i = 0; i < NUMBER_OF_PEDESTRIANS; i++) {
 		printf("%d\n",i);
-		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior()), NUMBER_OF_TIMESTEPS)));
+		State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
+		car = Car(initialCarState, CARLENGTH, CARWIDTH);
+		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior(car)), NUMBER_OF_TIMESTEPS)));
 	}
-	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
-	car = Car(initialCarState, CARLENGTH, CARWIDTH);
 	//planner = SimplePlanner(car, pedestrians);
 	planner = PotentialPlanner2(car, pedestrians);
 	//planner = PotentialPlanner(car, pedestrians);

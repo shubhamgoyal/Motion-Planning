@@ -18,7 +18,7 @@ protected:
 	int action_type;
 
 public:
-	Pedestrian(State astate, Pedestrian_Behavior behavior, long long int timeSteps);
+	Pedestrian(State astate, Pedestrian_Behavior &behavior, long long int timeSteps);
 	void update_state(double time_step);
 	void draw();
 	int getColor()

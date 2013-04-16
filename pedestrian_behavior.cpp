@@ -7,6 +7,8 @@
 
 void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type) {
 	if (isExit && actions.empty()) return;
+	if (pedestrian_state.y < car->getY() - car->getLength()/2)  action_type = action_type%10 + 10;
+	else	action_type %= 10;
 	if (action_type==0 || actions.empty() ) {
 		insert_new_long_term_goal(actions, pedestrian_state, action_type);
 	}

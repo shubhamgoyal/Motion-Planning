@@ -64,6 +64,7 @@ Case 4: We sample a random number and the pedestrian stops for that many time st
 #include "environment.h"
 #include "typeAndStruct.h"
 #include "pedestrian_actions.h"
+#include "car.h"
 
 #include <queue>
 #include <time.h>
@@ -84,8 +85,12 @@ protected:
 	int isExit;
 public:
 	Environment environment;
-	Pedestrian_Behavior()
+	
+	Pedestrian_Behavior(){};
+
+	Pedestrian_Behavior(Car &acar)
 	{
+		car = &acar;
 		isExit = 0;
 		environment = Environment();
 
@@ -103,6 +108,8 @@ private:
 		}
 		return rand();
 	}
+
+	Car *car;
 
 
 };
