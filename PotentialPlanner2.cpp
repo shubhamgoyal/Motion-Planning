@@ -78,9 +78,10 @@ void PotentialPlanner2::calcTotalForce()
 
 Control PotentialPlanner2::convertForceToControl(Vector2D f)
 {
-	dd norm1 = 1e-3;
-	dd norm2 = 1e-5;
+	dd norm1 = 1e-4;
+	dd norm2 = 1e-4;
 	dd maxAccel = 1e-3;
+	dd minAccel = -5e-3;
 	dd maxRotate = 1e-3;
 	dd maxTheta = 1e-1;
 	dd maxV = 15.0;
@@ -118,7 +119,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 
 	if ((car->getV() > maxV && c.h1 > 1e-5) || (car->getV() < -maxV && c.h1 < -1e-5)) c.h1 = 0;
 	else if (c.h1 > maxAccel) c.h1 = maxAccel;
-	else if (c.h1 < -maxAccel) c.h1 = -maxAccel;
+	else if (c.h1 < minAccel) c.h1 = minAccel;
 
 	if (car->getTheta() - M_PI/2.0 >  maxTheta && c.h2 > -1e-7) c.h2 = -1e-3;
 	else if (car->getTheta() - M_PI/2.0 < -maxTheta && c.h2 < 1e-7) c.h2 = 1e-3;

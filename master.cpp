@@ -62,6 +62,16 @@ static void Draw(void)
 		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
 		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
 	glEnd();
+	/*Draw static lines every 50m*/
+	glColor3f(0.1,0.1,0.1);
+	glBegin(GL_LINES);
+		int numLine=10;
+		for (int i=0;i<numLine;++i)
+		{
+			glVertex2f(X_MIN,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
+			glVertex2f(X_MAX,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
+		}
+	glEnd();
 
 	/*Draw object*/
    car.draw();
