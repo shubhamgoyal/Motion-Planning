@@ -4,6 +4,7 @@ Pedestrian::Pedestrian(State astate, Pedestrian_Behavior behavior, long long int
 	this->behavior = behavior;
 	color = 0;
 	action_type=0;
+	update_state(TIME_STEP_DURATION);
 }
 
 void Pedestrian::update_state(double time_step) {
@@ -32,7 +33,7 @@ void Pedestrian::draw()
 				glColor3f(0.0,1.0,0.0);
 				break;
 			case 3:
-				glColor3f(0.0,1.0,1.0);
+				glColor3f(0.8, 0.8, 0.8);
 				break;
 			default:
 				glColor3f(1.0,1.0,1.0);

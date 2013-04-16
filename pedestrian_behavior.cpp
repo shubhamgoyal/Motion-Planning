@@ -59,24 +59,27 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::queue<pedestrian::actio
 	}
 	*/
 
-	int chanceCross=45;
+	int getExit=5;
+	int getSamePavement= getExit+35;
+	int getCross=getSamePavement+45;
+	int getStop=getCross+15;
 	
-	if (goal_type >0 && goal_type < 5)
+	if (goal_type >0 && goal_type <= getExit)
 	{
 		action_type=-1;
 		insert_long_term_exit(actions, pedestrian_state);
 	}
-	else if (goal_type < 90-chanceCross)
+	else if (goal_type <= getSamePavement)
 	{
 		action_type=1;
 		insert_long_term_walk_same_pavement(actions, pedestrian_state);
 	}
-	else if (goal_type < 90)
+	else if (goal_type <= getCross)
 	{
 		action_type=2;
 		insert_long_term_walk_opposite_pavement(actions, pedestrian_state);
 	}
-	else if (goal_type <=100)
+	else if (goal_type <=getStop)
 	{
 		action_type=3;
 		insert_long_term_stop(actions);
@@ -128,18 +131,26 @@ void Pedestrian_Behavior::insert_long_term_exit(std::queue<pedestrian::action> &
 double Pedestrian_Behavior::sample_random(double min_value, double max_value) {
 	std::uniform_real_distribution<double> dist(min_value, max_value);
 	std::mt19937 rng;
-	rng.seed(std::random_device{}()); 
+	//rng.seed(std::random_device{}()); 
+	rng.seed(getRand());
 	return dist(rng);
 }
 
 double Pedestrian_Behavior::sample_normal_random(double min_value, double max_value, double mean, double stddev) {
 	std::uniform_real_distribution<double> dist(mean, stddev);
 	std::mt19937 rng;
-	rng.seed(std::random_device{}()); 
+	//rng.seed(std::random_device{}()); 
+	rng.seed(getRand());
+	/*
 	double value = 100000;
 	while ((value > Y_MAX) || (value < Y_MIN)) {
 		value = dist(rng);
 	}
+	*/
+	double value = dist(rng);
+	if (value > Y_MAX) value = Y_MAX;
+	else if (value < Y_MIN) value = Y_MIN;
+
 	return value;
 }
 
@@ -190,7 +201,7 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 			zebra_crossings_within_range.push_back(i);
 		}
 	}
-	int random_use_zebra_crossing = (rand() % 10) + 1;
+	int random_use_zebra_crossing = (getRand() % 10) + 1;
 	if  (zebra_crossings_within_range.size() > 0) {
 		if (random_use_zebra_crossing > 3) {
 			if (zebra_crossings_within_range.size() > 1) {
@@ -202,7 +213,7 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 					y_cross = environment.zebra_crossings[zebra_crossings_within_range[0]].y_min + value;
 				}
 				else {
-					y_cross = environment.zebra_crossings[zebra_crossings_within_range[1]].y_min + value - 2;
+					y_cross = environment.zebra_crossings[zebra_crossings_within_range[1]].y_min + value - 2.0;
 				}
 			}
 			else {
@@ -296,7 +307,7 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 
 void Pedestrian_Behavior::insert_long_term_stop(std::queue<pedestrian::action> &actions) {
 	printf("In long_term_stop\n");
-	int random_steps = (rand() % 101);
+	int random_steps = (getRand() % (int)ceil(50/TIME_STEP_DURATION));
 	random_steps += 50;
 	/* CHANGED!!
 	for (int i = 0; i < random_steps; i++) {

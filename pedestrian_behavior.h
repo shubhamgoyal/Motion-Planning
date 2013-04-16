@@ -98,7 +98,7 @@ private:
 	{
 		static int isSeeded=0;
 		if (isSeeded == 0){
-			srand(time(NULL));
+			srand( (unsigned int)RANDOM_SEED*RANDOM_SEED*343+38 );
 			isSeeded=1;
 		}
 		return rand();

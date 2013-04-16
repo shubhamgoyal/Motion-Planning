@@ -1,23 +1,32 @@
 #include <cstdio>
+#include <cassert>
 #include "PotentialPlanner2.h"
+
+#define DANGEROUS_Y_DIST 6.0
+#define DANGEROUS_X_DIST 3.0
 
 bool PotentialPlanner2::isDangerous(State astate)
 {
-	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+100) {
+	double dy = astate.y - car->getY();
+	double dx = astate.x - car->getX();
+	double dist = sqrt(dx*dx + dy*dy);
+	double safetyBuffer = 1.6;
+	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+50) {
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
 		//reach the pedestrian y position
 		dd tt = (y - car->getY())/car->getV();
 		if (x < car->getX()+car->getWidth()/2 && v*cos(theta)>0.0001) {
 			//We times 1.5 to consider the car deceleration
-			if (x + tt*v*cos(theta)*1.5 > car->getX() - car->getWidth()/2)
+			if (x + tt*v*cos(theta)*safetyBuffer > car->getX() - car->getWidth()/2)
 				return true;
 		}
 		if (x > car->getX()-car->getWidth()/2 && v*cos(theta)<0.0001) {
-			if (x + tt*v*cos(theta)*1.5 < car->getX() + car->getWidth()/2)
+			if (x + tt*v*cos(theta)*safetyBuffer < car->getX() + car->getWidth()/2)
 				return true;
 		}
 	}
+	if (astate.y > car->getY()-car->getLength()/2 && dist < 2.0) return true;
 	return false;
 }
 
@@ -38,6 +47,8 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	dd dx = car->getX() - astate.x;
 	dd dy = car->getY() - astate.y;
 	dd dist = sqrt(dx*dx + dy*dy);
+	dd y_factor = DANGEROUS_Y_DIST/dist;
+	dd x_factor = DANGEROUS_X_DIST/(abs(dx)+0.001);
 	if (isDangerous(astate))
 	{
 		danger = true;
@@ -48,16 +59,27 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 		apedestrian.setColor(0);
 	}
 	dd forceVal = m_charge*car->getV()/(dist*dist);
-	if (dy > 0) forceVal=0.0;
-	resForce.x = forceVal*dx/dist;
+
+	if (dy > -car->getLength()/2) forceVal=0.0;
+
+	resForce.x = x_factor*forceVal*dx/dist;
 	resForce.y = forceVal*dy/dist;
 	if (danger) 
 	{
-		resForce.x = -5.0*cos(astate.theta)*abs(resForce.x);
-		resForce.y *= 1e6/(dist*dist);
+		resForce.x = -3.0*cos(astate.theta)*abs(resForce.x)*x_factor;
+
+		bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
+		assert( tempAssert || (printf("----xforce: %lf, vxPed: %lf\n-----",resForce.x,apedestrian.getXDot() ),tempAssert));
+		resForce.y *= 1e4*y_factor*y_factor;
+		if (dist < 10) resForce.y *= x_factor*x_factor/6;
 	}
+
+	if (resForce.y > 0) resForce.y = 0;
+
 	return resForce;
 }
+
+
 
 void PotentialPlanner2::calcTotalForce() 
 {
@@ -66,13 +88,15 @@ void PotentialPlanner2::calcTotalForce()
 		m_force = addVector2D(m_force, calcForce( (*pedestrians)[i]));
 	}
 	//ADD THE GOAL EFFECT
-	m_force.y += 100.0*m_charge;
+	m_force.y += 75.0*m_charge;
 
 	//ADD THE ROAD EFFECT
 	dd isInside = 1.0;
+	dd dx_left = car->getX()-PAVEMENT_LEFT_X_MAX;
+	dd dx_right = car->getX()-PAVEMENT_RIGHT_X_MIN;
 	if (!(car->getX() > PAVEMENT_LEFT_X_MAX && car->getX() < PAVEMENT_RIGHT_X_MIN)) isInside=-1.0;
-	m_force.x += isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_LEFT_X_MAX);
-	m_force.x += isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_RIGHT_X_MIN);
+	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_left*dx_left*dx_left);
+	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_right*dx_right*dx_right);
 
 }
 
@@ -80,16 +104,27 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 {
 	dd norm1 = 1e-3;
 	dd norm2 = 1e-3;
-	dd maxAccel = 5e-2;
+	dd maxAccel = 1e-2;
+	if (car->getV() < 3) maxAccel = 5e-2;
 	dd minAccel = -2e-1;
-	dd maxRotate = 1e-2;
-	dd maxTheta = 1e-1;
+	dd maxRotate = 1e-3;
+	dd maxAbsTheta = 3e-1;
+	dd maxTheta = maxAbsTheta/(abs(car->getX()-(X_MAX+X_MIN)/2.0)+1.0);
+	dd minTheta = -maxTheta;
+	if (car->getX() - (X_MAX+X_MIN)/2.0 > 0) 
+	{
+		maxTheta = maxAbsTheta;
+	}
+	else
+	{
+		minTheta = -maxAbsTheta;
+	}
 	dd maxV = 15.0;
 	
 	Control c;
 	dd theta = car->getTheta();
 	c.h1 = norm1*(f.x*cos(theta) + f.y*sin(theta));
-	c.h2 = norm2*(-f.x*sin(theta) + f.y*cos(theta));
+	c.h2 = norm2*(-f.x*sin(theta) + f.y*cos(theta))/car->getV();
 	
 	/* DEBUGGING *//*	
 	static unsigned int count=0;
@@ -122,7 +157,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	else if (c.h1 < minAccel) c.h1 = minAccel;
 
 	if (car->getTheta() - M_PI/2.0 >  maxTheta && c.h2 > -1e-7) c.h2 = -1e-3;
-	else if (car->getTheta() - M_PI/2.0 < -maxTheta && c.h2 < 1e-7) c.h2 = 1e-3;
+	else if (car->getTheta() - M_PI/2.0 < minTheta && c.h2 < 1e-7) c.h2 = 1e-3;
 	else if (c.h2 > maxRotate) c.h2 = maxRotate;
 	else if (c.h2 < -maxRotate) c.h2 = -maxRotate;
 	

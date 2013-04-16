@@ -137,7 +137,7 @@ int getRandomInt()
 	static int isSeeded = 0;
 	if (!isSeeded)
 	{
-		srand(time(NULL));
+		srand(RANDOM_SEED*58542);
 		isSeeded = 1;
 	}
 	return rand();
@@ -148,7 +148,8 @@ State getRandomPedestrianState()
 	State st;
 	std::uniform_real_distribution<double> dist(0,1);
 	std::mt19937 rng;
-	rng.seed(std::random_device{}());
+	//rng.seed(std::random_device{}());
+	rng.seed(getRandomInt());
 	if (getRandomInt()%2 == 0)
 	{
 		st.x = PAVEMENT_LEFT_X_MIN + dist(rng)*(PAVEMENT_LEFT_X_MAX - PAVEMENT_LEFT_X_MIN);
@@ -180,11 +181,17 @@ void initialize_environment() {
 void execute() {
 	printf("-----EXECUTE-----\n");
 	clock_t before;
-	double seconds;
+	static unsigned int count = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
+		count++;
 		//debug
-		printf("%d, carV: %lf, carTheta: %lf\n",i,car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI);
+		if (count >= 15)
+		{
+			printf("%d, car: x=%lf, y=%lf, V= %lf, Theta: %lf\n",i,car.getX(), car.getY(), car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI);
+			count=0;
+		}
+
 		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
 			pedestrians[j].update_state(TIME_STEP_DURATION);
 		}
