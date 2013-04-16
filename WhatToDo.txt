@@ -1,0 +1,35 @@
+List what to be finished:
+1) Implement D* lite (From Sven Koenig paper)
+
+2) Fix the bug on the pedestrians:
+	a) It sometimes move outside of the pavement.
+		This maybe due to the fact that we just count
+		the number of needed steps. And this is just
+		approximated (Rounded to the above integers).
+	b) Some pedestrians sometimes go outside the
+		environment (Y > Y_MAX) ... Don't know why.
+
+3) Change the implementation on how the environment
+	pass the pedestrian to the planner:
+	a) The environment should only pass the pedestrian
+		who are visible to the car (100m ahead?)
+
+4) Create a test system:
+	a) Must be able to detect collision
+	b) Must be able to measure the time needed
+	   for the car to move from Y_MIN to Y_MAX
+	c) If possible, allow batch measuring
+
+5) Create smarter pedestrian:
+	a) have some reaction to the car
+	b) but must make sure the car still need
+	   to avoid something. Otherwise, the car
+		will only go straight with no pedestrian
+		crossings.
+
+6) Create a controllable random system:
+	a) we can specify a seed, and the same seed mean
+		exactly the same event will occur.
+	b) I have tried creating this, but somehow failed.
+		The initialization already done. But the event
+		after always changing. (Due to thread??).

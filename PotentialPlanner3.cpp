@@ -2,7 +2,7 @@
 #include <cassert>
 #include "PotentialPlanner2.h"
 
-#define DANGEROUS_Y_DIST 4.0
+#define DANGEROUS_Y_DIST 5.0
 #define DANGEROUS_X_DIST 3.0
 
 bool PotentialPlanner2::isDangerous(State astate)
@@ -70,7 +70,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 
 		bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
 		assert( tempAssert || (printf("----xforce: %lf, vxPed: %lf\n-----",resForce.x,apedestrian.getXDot() ),tempAssert));
-		resForce.y *= 1e4*y_factor*y_factor;
+		resForce.y *= 1.3e4*y_factor*y_factor;
 		if (dist < 10) resForce.y *= x_factor*x_factor/6;
 	}
 
@@ -95,22 +95,21 @@ void PotentialPlanner2::calcTotalForce()
 	dd dx_left = car->getX()-PAVEMENT_LEFT_X_MAX;
 	dd dx_right = car->getX()-PAVEMENT_RIGHT_X_MIN;
 	if (!(car->getX() > PAVEMENT_LEFT_X_MAX && car->getX() < PAVEMENT_RIGHT_X_MIN)) isInside=-1.0;
-	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_left*dx_left*dx_left);
-	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_right*dx_right*dx_right);
+	m_force.x += (10.0*10.0*5.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_left*dx_left*dx_left*dx_left);
+	m_force.x += (10.0*10.0*5.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_right*dx_right*dx_right*dx_right);
 
 }
 
 Control PotentialPlanner2::convertForceToControl(Vector2D f)
 {
 	dd norm1 = 1e-3;
-	dd norm2 = 3e-4;
+	dd norm2 = 1e-4;
 	dd maxAccel = 1e-2;
 	if (car->getV() < 3) maxAccel = 5e-2;
-	dd minAccel = -1.2e-1;
-	//dd minAccel = -2e-2;
-	dd maxRotate = 3e-4;
+	dd minAccel = -9e-2;
+	dd maxRotate = 1e-4;
 	dd maxAbsTheta = 3e-1;
-	dd maxTheta = maxAbsTheta/(abs(car->getX()-(X_MAX+X_MIN)/2.0)+1.0);
+	dd maxTheta = maxAbsTheta/(pow(abs(car->getX()-(X_MAX+X_MIN)/2.0),1.5)+1.0);
 	dd minTheta = -maxTheta;
 	if (car->getX() - (X_MAX+X_MIN)/2.0 > 0) 
 	{

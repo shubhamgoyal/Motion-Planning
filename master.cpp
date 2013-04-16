@@ -1,4 +1,6 @@
 #include "master.h"
+
+#include <cassert>
 #include <cstdio>
 #include <ctime>
 #include <cstdlib>
@@ -125,7 +127,7 @@ void* gui(void* args) {
    Init();
    glutReshapeFunc(Reshape);
    glutDisplayFunc(Draw);
-   glutTimerFunc(1,update,0);
+   glutTimerFunc(10,update,0);
    glutMainLoop();
 	return NULL;
 }
@@ -137,7 +139,7 @@ int getRandomInt()
 	static int isSeeded = 0;
 	if (!isSeeded)
 	{
-		srand(RANDOM_SEED*58542);
+		srand((int)((long long int)RANDOM_SEED*58542%(1<<31-1)));
 		isSeeded = 1;
 	}
 	return rand();
@@ -171,11 +173,50 @@ void initialize_environment() {
 		printf("%d\n",i);
 		State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
 		car = Car(initialCarState, CARLENGTH, CARWIDTH);
+		previousCarState = initialCarState;
 		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior(car)), NUMBER_OF_TIMESTEPS)));
 	}
 	//planner = SimplePlanner(car, pedestrians);
 	planner = PotentialPlanner2(car, pedestrians);
 	//planner = PotentialPlanner(car, pedestrians);
+}
+
+bool isPointInsideCar(State carState, dd x, dd y)
+{
+	dd hwidth = CARWIDTH/2.0 + 0.1;
+	dd hlength= CARLENGTH/2.0 + 0.1;
+	dd cx = carState.x;
+	dd cy = carState.y;
+	dd theta = carState.theta;
+	dd dx1 = hlength*cos(theta) - hwidth*sin(theta);
+	dd dx2 = hlength*cos(theta) + hwidth*sin(theta);
+	dd dy1 = hlength*sin(theta) + hwidth*cos(theta);
+	dd dy2 = hlength*sin(theta) - hwidth*cos(theta);
+	//Check all the cross product
+	if ( (cx + dx1 - x)*(cy + dy2 - y) - (cx + dx2 - x)*(cy + dy1 - y) > -0.001) return false;
+	if ( -(cx - dx1 - x)*(cy + dy2 - y) + (cx + dx2 - x)*(cy - dy1 - y) > -0.001) return false;
+	if ( (cx - dx1 - x)*(cy - dy2 - y) - (cx - dx2 - x)*(cy - dy1 - y) > -0.001) return false;
+	if ( -(cx + dx1 - x)*(cy - dy2 - y) + (cx - dx2 - x)*(cy + dy1 - y) > -0.001) return false;
+	return true;
+	
+}
+bool carHitPedestrian(State previousCarState, State currentCarState, State pedestrianState)
+{
+	dd pedX = pedestrianState.x, pedY = pedestrianState.y;
+	bool curInside = isPointInsideCar(currentCarState, pedX, pedY);
+	bool prevInside = isPointInsideCar(previousCarState, pedX, pedY);
+	
+	/* DEBUGGING */
+	//if (curInside) {printf("\n---HELLO1\n");exit(0);}
+	//if (prevInside) {printf("\n---HELLO2---\n");exit(0);}
+	/*************/
+	
+	if ( curInside && !prevInside)
+	{
+		dd prevCarY = previousCarState.y, pedY = pedestrianState.y;
+		if (pedY > prevCarY + CARLENGTH/2*cos(previousCarState.theta) - 0.1) return true;
+	}
+	return false;
 }
 
 void execute() {
@@ -184,11 +225,12 @@ void execute() {
 	static unsigned int count = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
+		timeFromStart = (float)(clock()-start)/CLOCKS_PER_SEC;
 		count++;
 		//debug
 		if (count >= 15)
 		{
-			printf("%d, car: x=%lf, y=%lf, V= %lf, Theta: %lf\n",i,car.getX(), car.getY(), car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI);
+			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: %u, time: %f\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numCollision, timeFromStart);
 			count=0;
 		}
 
@@ -197,6 +239,18 @@ void execute() {
 		}
 		car.control();
 		car.update_state(TIME_STEP_DURATION);
+
+		/*Checking car -- pedestrian collision (using previousCarState)*/
+		for (int j=0; j< NUMBER_OF_PEDESTRIANS; j++) {
+			if (carHitPedestrian(previousCarState, car.getState(), pedestrians[j].getState()))
+					numCollision++;
+		}
+
+		if (!(car.getY() + (Y_MAX - Y_MIN)/2.0 < previousCarState.y)) yTotal += car.getY() - previousCarState.y;
+		else yTotal += car.getY() + (Y_MAX - Y_MIN) - previousCarState.y;
+
+
+		previousCarState = car.getState();
 		
 		while ( (float)(clock()-before) < 1e-2*(CLOCKS_PER_SEC)  )
 		{
@@ -223,6 +277,7 @@ int main() {
 	initialize_environment();
 	pthread_t thread;
 	pthread_t gui_thread;
+	start = clock();
 	pthread_create(&thread, NULL, &control, NULL);
 	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
 	execute();

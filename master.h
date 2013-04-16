@@ -17,4 +17,12 @@ Car car;
 //PotentialPlanner planner;
 PotentialPlanner2 planner;
 
+/*For testing */
+State previousCarState;
+unsigned int numCollision = 0;
+bool carHitPedestrian(State previousCarState, State currentCarState, State pedestrianState);
+clock_t start;
+float timeFromStart=0;
+dd yTotal = 0;
+
 #endif
