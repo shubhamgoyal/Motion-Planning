@@ -1,0 +1,8 @@
+We need to do the following to change the planner used:
+1) change the PLANNER in Makefile
+2) include the planner to master.h
+3) change the used planner in master.h
+4) change the initialization of planner in master.cpp
+   (in initialize_environment function)
+
+THATS ALL!

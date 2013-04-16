@@ -38,9 +38,9 @@ struct zebra_crossing {
 	double width;
 };
 
-#define NUMBER_OF_PEDESTRIANS 100
-#define NUMBER_OF_TIMESTEPS 1000000
-#define TIME_STEP_DURATION 0.0001
+#define NUMBER_OF_PEDESTRIANS 300
+#define NUMBER_OF_TIMESTEPS 10000
+#define TIME_STEP_DURATION 5e-3
 
 class Environment
 {

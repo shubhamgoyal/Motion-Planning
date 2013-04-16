@@ -5,6 +5,7 @@
 //#define _USE_MATH_DEFINES
 //#include <cmath>
 
+#include "environment.h"
 #include "Object.h"
 #include <pthread.h>
 //#define CARLENGTH 3.0
@@ -46,6 +47,7 @@ class Car: public Object {
 		void update_state(dd time_step){
 			state.x += getXDot()*time_step;
 			state.y += getYDot()*time_step;
+			if (state.y >= Y_MAX) state.y -= Y_MAX;
 		}
 
 		void control(){

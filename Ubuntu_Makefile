@@ -1,18 +1,19 @@
 CFLAGS=-std=c++0x -g -lpthread
 GLFLAGS=-lglut -lGLU -lGL
+#PLANNER=SimplePlanner
+PLANNER=PotentialPlanner2
 
+all: master.exe master.o $(PLANNER).o pedestrian_behavior.o environment.o pedestrian.o car.o 
 
-all: master.exe master.o SimplePlanner.o pedestrian_behavior.o environment.o pedestrian.o car.o 
-
-master.exe: master.o car.o pedestrian.o SimplePlanner.o pedestrian_behavior.o environment.o
-	g++ master.o car.o pedestrian.o SimplePlanner.o pedestrian_behavior.o environment.o -o master.exe $(CFLAGS) $(GLFLAGS)
+master.exe: master.o car.o pedestrian.o $(PLANNER).o pedestrian_behavior.o environment.o
+	g++ master.o car.o pedestrian.o $(PLANNER).o pedestrian_behavior.o environment.o -o master.exe $(CFLAGS) $(GLFLAGS)
 
 master.o: master.cpp
 	g++ master.cpp -c $(CFLAGS) $(GLFLAGS)
 
 
-SimplePlanner.o: SimplePlanner.cpp
-	g++ -c SimplePlanner.cpp $(CFLAGS) 
+$(PLANNER).o: $(PLANNER).cpp
+	g++ -c $(PLANNER).cpp $(CFLAGS) 
 
 pedestrian_behavior.o: pedestrian_behavior.cpp
 	g++ -c pedestrian_behavior.cpp $(CFLAGS)

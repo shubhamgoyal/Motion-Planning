@@ -5,6 +5,7 @@
 #include <random>
 #include <GL/glut.h>
 
+
 /*Functions for openGL */
 
 static void Init(void)
@@ -102,7 +103,7 @@ void* gui(void* args) {
    Init();
    glutReshapeFunc(Reshape);
    glutDisplayFunc(Draw);
-   glutTimerFunc(10,update,0);
+   glutTimerFunc(1,update,0);
    glutMainLoop();
 	return NULL;
 }
@@ -156,7 +157,10 @@ void initialize_environment() {
 
 void execute() {
 	printf("-----EXECUTE-----\n");
+	clock_t before;
+	double seconds;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
+		before = clock();
 		//debug
 		printf("%d, carV: %lf, carTheta: %lf\n",i,car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI);
 		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
@@ -164,7 +168,15 @@ void execute() {
 		}
 		car.control();
 		car.update_state(TIME_STEP_DURATION);
+		
+		while ( (float)(clock()-before) < 1e-2*(CLOCKS_PER_SEC)  )
+		{
+		//	printf("diff: %e\n", (float)(after-before)/CLOCKS_PER_SEC);
+		}
+		
+
 	}
+
 	execute();
 }
 

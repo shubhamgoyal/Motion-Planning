@@ -53,8 +53,8 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	resForce.y = forceVal*dy/dist;
 	if (danger) 
 	{
-		resForce.x *= -1.0;
-		resForce.y *= 1e3/dist;
+		resForce.x = -5.0*cos(astate.theta)*abs(resForce.x);
+		resForce.y *= 1e6/(dist*dist);
 	}
 	return resForce;
 }
@@ -66,23 +66,23 @@ void PotentialPlanner2::calcTotalForce()
 		m_force = addVector2D(m_force, calcForce( (*pedestrians)[i]));
 	}
 	//ADD THE GOAL EFFECT
-	m_force.y += 1.0;
+	m_force.y += 100.0*m_charge;
 
 	//ADD THE ROAD EFFECT
 	dd isInside = 1.0;
 	if (!(car->getX() > PAVEMENT_LEFT_X_MAX && car->getX() < PAVEMENT_RIGHT_X_MIN)) isInside=-1.0;
-	m_force.x += isInside*1.0*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_LEFT_X_MAX);
-	m_force.x += isInside*1.0*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_RIGHT_X_MIN);
+	m_force.x += isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_LEFT_X_MAX);
+	m_force.x += isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(car->getX()-PAVEMENT_RIGHT_X_MIN);
 
 }
 
 Control PotentialPlanner2::convertForceToControl(Vector2D f)
 {
-	dd norm1 = 1e-4;
-	dd norm2 = 1e-4;
-	dd maxAccel = 1e-3;
-	dd minAccel = -5e-3;
-	dd maxRotate = 1e-3;
+	dd norm1 = 1e-3;
+	dd norm2 = 1e-3;
+	dd maxAccel = 5e-2;
+	dd minAccel = -2e-1;
+	dd maxRotate = 1e-2;
 	dd maxTheta = 1e-1;
 	dd maxV = 15.0;
 	
