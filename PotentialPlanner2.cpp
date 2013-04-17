@@ -25,6 +25,8 @@ bool PotentialPlanner2::isDangerous(State astate)
 			if (x + tt*v*cos(theta)*safetyBuffer < car->getX() + car->getWidth()/2)
 				return true;
 		}
+		if (x < car->getX()+car->getWidth()/2 && x > car->getX()-car->getWidth()/2 && y - car->getY() < DANGEROUS_Y_DIST) return true;
+
 	}
 	if (astate.y > car->getY()-car->getLength()/2 && dist < 2.0) return true;
 	return false;
@@ -63,7 +65,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (dy > -car->getLength()/2) forceVal=0.0;
 
 	resForce.x = x_factor*forceVal*dx/dist;
-	resForce.y = forceVal*dy/dist;
+	resForce.y = (forceVal*dy/dist)*(car->getV()/7.0)*(car->getV()/4.0);
 	if (danger) 
 	{
 		resForce.x = -3.0*cos(astate.theta)*abs(resForce.x)*x_factor;
@@ -109,7 +111,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	dd minAccel = -1.2e-1;
 	//dd minAccel = -2e-2;
 	dd maxRotate = 3e-4;
-	dd maxAbsTheta = 3e-1;
+	dd maxAbsTheta = 1.5e-1;
 	dd maxTheta = maxAbsTheta/(abs(car->getX()-(X_MAX+X_MIN)/2.0)+1.0);
 	dd minTheta = -maxTheta;
 	if (car->getX() - (X_MAX+X_MIN)/2.0 > 0) 
@@ -120,7 +122,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	{
 		minTheta = -maxAbsTheta;
 	}
-	dd maxV = 15.0;
+	dd maxV = 25.0;
 	
 	Control c;
 	dd theta = car->getTheta();

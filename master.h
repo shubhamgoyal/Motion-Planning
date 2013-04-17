@@ -2,6 +2,7 @@
 #define MASTER
 
 #include <vector>
+#include <ctime>
 
 #include "pedestrian.h"
 #include "car.h"
@@ -22,6 +23,7 @@ State previousCarState;
 unsigned int numCollision = 0;
 bool carHitPedestrian(State previousCarState, State currentCarState, State pedestrianState);
 clock_t start;
+
 float timeFromStart=0;
 dd yTotal = 0;
 

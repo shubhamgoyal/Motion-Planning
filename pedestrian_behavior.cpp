@@ -23,6 +23,11 @@ void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions,
 	/**/
 	pedestrian_state.x = pedestrian_state.x + next_action.x_velocity * time_step;
 	pedestrian_state.y = pedestrian_state.y + next_action.y_velocity * time_step;
+
+	/* To make the pedestrian looping in the environment (if it goes outside??) */
+	if (pedestrian_state.y > Y_MAX) pedestrian_state.y -= (Y_MAX-Y_MIN);
+	else if (pedestrian_state.y < Y_MIN) pedestrian_state.y += (Y_MAX-Y_MIN);
+	/******/
 	pedestrian_state.v = sqrt((next_action.x_velocity)*(next_action.x_velocity) +(next_action.y_velocity) *(next_action.y_velocity));
 	pedestrian_state.theta = atan2(next_action.y_velocity, next_action.x_velocity);
 
@@ -150,8 +155,8 @@ double Pedestrian_Behavior::sample_normal_random(double min_value, double max_va
 	}
 	*/
 	double value = dist(rng);
-	if (value > Y_MAX) value = Y_MAX;
-	else if (value < Y_MIN) value = Y_MIN;
+	if (value > Y_MAX) value = Y_MAX-0.5;
+	else if (value < Y_MIN) value = Y_MIN+0.5;
 
 	return value;
 }

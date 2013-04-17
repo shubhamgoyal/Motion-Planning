@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstdio>
-#include <ctime>
 #include <cstdlib>
 #include <random>
 #include <GL/glut.h>
@@ -17,6 +16,7 @@ static void Init(void)
     glClearAccum(0.0, 0.0, 0.0, 0.0);
 }
 
+/* To see 50m ahead *//*
 static void Reshape(int width, int height)
 {
 
@@ -30,6 +30,26 @@ static void Reshape(int width, int height)
     glTranslatef(-0.5,-1,0);
     glScalef(50.0/height,50.0/width,1);
 }
+/*******************/
+
+/* To see the overview of all road (to see pedestrian behavior) */
+static void Reshape(int width, int height)
+{
+
+    glViewport(0, 0, width, height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+	 glRotatef(90.0,0,0,1.0);
+    glTranslatef(-0.5,-0.8,0);
+    glScalef(20.0/height,7.0/width,1);
+}
+/********************/
+
+
+
 
 static void Draw(void)
 {
@@ -37,7 +57,7 @@ static void Draw(void)
 
 	/*Draw environment*/
 	glPushMatrix();
-	glTranslatef(0,-car.getY() + 10,0);
+	//glTranslatef(0,-car.getY() + 10,0);
 	//BACKGROUND GRASS
 	glColor3f(0.6,0.8,0.195);
 	glBegin(GL_QUADS);
@@ -225,7 +245,7 @@ void execute() {
 	static unsigned int count = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
-		timeFromStart = (float)(clock()-start)/CLOCKS_PER_SEC;
+		timeFromStart = (float)(clock()-start)/CLOCKS_PER_SEC/2.0;
 		count++;
 		//debug
 		if (count >= 15)

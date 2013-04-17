@@ -14,20 +14,27 @@ List what to be finished:
 	a) The environment should only pass the pedestrian
 		who are visible to the car (100m ahead?)
 
-4) Create a test system:
+4) Create a test system: ----ALMOST DONE-----
 	a) Must be able to detect collision
 	b) Must be able to measure the time needed
 	   for the car to move from Y_MIN to Y_MAX
 	c) If possible, allow batch measuring
 
-5) Create smarter pedestrian:
+5) Create better GUI:
+	a) Apply some picture for the car
+	b) create 2 lines and the car can continue to the 
+	   second line after the first line and move back
+		to the first line afterward (the other line 
+		always give the road ahead)
+
+6) Create smarter pedestrian:
 	a) have some reaction to the car
 	b) but must make sure the car still need
 	   to avoid something. Otherwise, the car
 		will only go straight with no pedestrian
 		crossings.
 
-6) Create a controllable random system:
+7) Create a controllable random system:
 	a) we can specify a seed, and the same seed mean
 		exactly the same event will occur.
 	b) I have tried creating this, but somehow failed.
