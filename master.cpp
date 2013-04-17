@@ -189,15 +189,16 @@ State getRandomPedestrianState()
 
 void initialize_environment() {
 	printf("-----INITIALIZE-----\n");
+	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
+	car = Car(initialCarState, CARLENGTH, CARWIDTH);
+	previousCarState = initialCarState;
 	for (int i = 0; i < NUMBER_OF_PEDESTRIANS; i++) {
 		printf("%d\n",i);
-		State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
-		car = Car(initialCarState, CARLENGTH, CARWIDTH);
-		previousCarState = initialCarState;
 		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior(car)), NUMBER_OF_TIMESTEPS)));
+		if (pedestrians[i].getY() < 100) seenPedestrians.push_back(&pedestrians[i]);
 	}
 	//planner = SimplePlanner(car, pedestrians);
-	planner = PotentialPlanner2(car, pedestrians);
+	planner = PotentialPlanner2(car, seenPedestrians);
 	//planner = PotentialPlanner(car, pedestrians);
 }
 
@@ -253,21 +254,32 @@ void execute() {
 			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: %u, time: %f\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numCollision, timeFromStart);
 			count=0;
 		}
-
+		
 		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
 			pedestrians[j].update_state(TIME_STEP_DURATION);
+
 		}
 		car.control();
 		car.update_state(TIME_STEP_DURATION);
 
-		/*Checking car -- pedestrian collision (using previousCarState)*/
+		/*Checking car -- pedestrian collision (using previousCarState)
+		 *Also manage the seenPedestrian */
+		seenPedestrians.clear();
 		for (int j=0; j< NUMBER_OF_PEDESTRIANS; j++) {
 			if (carHitPedestrian(previousCarState, car.getState(), pedestrians[j].getState()))
 					numCollision++;
+			if (pedestrians[j].getY() > car.getY() - car.getLength() && pedestrians[j].getY() < car.getY() + 100)
+			{
+				seenPedestrians.push_back(&pedestrians[j]);
+				pedestrians[j].setColor(0);
+			}
+			else pedestrians[j].setColor(2);
 		}
-
+		
+		/* Calculating yTotal */
 		if (!(car.getY() + (Y_MAX - Y_MIN)/2.0 < previousCarState.y)) yTotal += car.getY() - previousCarState.y;
 		else yTotal += car.getY() + (Y_MAX - Y_MIN) - previousCarState.y;
+
 
 
 		previousCarState = car.getState();
@@ -279,10 +291,10 @@ void execute() {
 		
 
 	}
-
 	execute();
 }
 
+/*
 void* control(void* args) {
 	//debug
 	printf("---In control---\n");
@@ -291,7 +303,16 @@ void* control(void* args) {
 	}
 	return NULL;
 }
+*/
 
+void* control(void* args) {
+	//debug
+	printf("---In control---\n");
+	while (true) {
+		planner.plan(seenPedestrians);
+	}
+	return NULL;
+}
 
 int main() {
 	initialize_environment();

@@ -19,10 +19,10 @@ class PotentialPlanner2 : public Planner {
 	public:
 		//constructor
 		PotentialPlanner2():m_charge(3.0) {};
-		PotentialPlanner2(Car& acar, std::vector<Pedestrian> apedestrians):Planner(acar, apedestrians),m_charge(3.0){}
+		PotentialPlanner2(Car& acar, std::vector<Pedestrian*> apedestrians):Planner(acar, apedestrians),m_charge(3.0){}
 
 		//public functions
-		void plan(std::vector<Pedestrian> &apedestrians);
+		void plan(std::vector<Pedestrian*> &apedestrians);
 
 	protected:
 

@@ -87,7 +87,7 @@ void PotentialPlanner2::calcTotalForce()
 {
 	for (int i=0;i<pedestrians->size();++i)
 	{
-		m_force = addVector2D(m_force, calcForce( (*pedestrians)[i]));
+		m_force = addVector2D(m_force, calcForce( *((*pedestrians)[i]) ));
 	}
 	//ADD THE GOAL EFFECT
 	m_force.y += 75.0*m_charge;
@@ -179,7 +179,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	return c;
 }
 
-void PotentialPlanner2::plan(std::vector<Pedestrian> &apedestrians)
+void PotentialPlanner2::plan(std::vector<Pedestrian*> &apedestrians)
 {
 	std::deque<Control> tempPath;
 

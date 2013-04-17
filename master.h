@@ -13,6 +13,7 @@
 #include <pthread.h>
 
 std::vector<Pedestrian> pedestrians;
+std::vector <Pedestrian*> seenPedestrians;
 Car car;
 //SimplePlanner planner;
 //PotentialPlanner planner;
