@@ -9,7 +9,7 @@ List what to be finished:
 	b) Some pedestrians sometimes go outside the
 		environment (Y > Y_MAX) ... Don't know why.
 
-3) Change the implementation on how the environment
+3) Change the implementation on how the environment ----DONE----
 	pass the pedestrian to the planner:
 	a) The environment should only pass the pedestrian
 		who are visible to the car (100m ahead?)
@@ -28,13 +28,17 @@ List what to be finished:
 		always give the road ahead)
 
 6) Create smarter pedestrian:
-	a) have some reaction to the car
+	a) have some reaction to the car (don't know exactly how...)
 	b) but must make sure the car still need
 	   to avoid something. Otherwise, the car
 		will only go straight with no pedestrian
 		crossings.
+	c) We may not need this if our planner is good enough.
+		We can say that even in the extreme condition where
+		the pedestrian doesn't notice the car, the car can still
+		reasonably avoid the pedestrian.
 
-7) Create a controllable random system:
+7) Create a controllable random system: ---TRIED... ---- 
 	a) we can specify a seed, and the same seed mean
 		exactly the same event will occur.
 	b) I have tried creating this, but somehow failed.

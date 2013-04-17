@@ -32,6 +32,25 @@ bool PotentialPlanner2::isDangerous(State astate)
 	return false;
 }
 
+bool PotentialPlanner2::isVeryDangerous(State astate)
+{
+	//Very dangerous if would crash in 0.5s
+	double dx = astate.x - car->getX();
+	double dy = astate.y - car->getY();
+	double theta = car->getTheta();
+	double v = car->getV();
+	//THE COORDINATE OF THE astate base on car coordinate system
+	double dxx = dx*sin(theta) - dy*cos(theta);
+	double dyy = dx*cos(theta) + dy*sin(theta);
+	
+	if (abs(dyy) < car->getWidth()/2 && dxx-car->getLength()/2 < v/2)
+	{
+		return true;
+	}
+	return false;
+
+}
+
 dd PotentialPlanner2::goalForce()
 {
 	dd v = car->getV();
@@ -45,6 +64,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 {
 	State astate = apedestrian.getState();
 	bool danger=false;
+	bool veryDangerous=false;
 	Vector2D resForce;
 	dd dx = car->getX() - astate.x;
 	dd dy = car->getY() - astate.y;
@@ -54,6 +74,11 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (isDangerous(astate))
 	{
 		danger = true;
+		if (isVeryDangerous(astate))
+		{
+			veryDangerous = true;
+		}
+
 		apedestrian.setColor(1);
 	}
 	else
@@ -66,7 +91,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 
 	resForce.x = x_factor*forceVal*dx/dist;
 	resForce.y = (forceVal*dy/dist)*(car->getV()/7.0)*(car->getV()/4.0);
-	if (danger) 
+	if (danger && !veryDangerous) 
 	{
 		resForce.x = -3.0*cos(astate.theta)*abs(resForce.x)*x_factor;
 
@@ -74,6 +99,11 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 		assert( tempAssert || (printf("----xforce: %lf, vxPed: %lf\n-----",resForce.x,apedestrian.getXDot() ),tempAssert));
 		resForce.y *= 1e4*y_factor*y_factor;
 		if (dist < 10) resForce.y *= x_factor*x_factor/6;
+	}
+	else if (veryDangerous)
+	{
+		resForce.x *= 1e5;
+		resForce.y *= 1e5;
 	}
 
 	if (resForce.y > 0) resForce.y = 0;

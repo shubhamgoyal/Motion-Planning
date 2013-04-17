@@ -234,8 +234,8 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 			double mid_point_range;
 			double min_y = std::min(pedestrian_state.y, sample_goal_location_y);
 			double max_y = std::max(pedestrian_state.y, sample_goal_location_y);
-			double mean = min_y + abs(max_y - min_y)/2.0;
-			double stddev = abs(max_y - min_y)/2.0;
+			double mean = min_y + fabs(max_y - min_y)/2.0;
+			double stddev = fabs(max_y - min_y)/2.0;
 			y_cross = sample_normal_random(Y_MIN, Y_MAX, mean, stddev);
 		}
 	}
@@ -255,8 +255,8 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 			double mid_point_range;
 			double min_y = std::min(pedestrian_state.y, sample_goal_location_y);
 			double max_y = std::max(pedestrian_state.y, sample_goal_location_y);
-			double mean = min_y + abs(max_y - min_y)/2.0;
-			double stddev = abs(max_y - min_y)/2.0;
+			double mean = min_y + fabs(max_y - min_y)/2.0;
+			double stddev = fabs(max_y - min_y)/2.0;
 			y_cross = sample_normal_random(Y_MIN, Y_MAX, mean, stddev);
 		}
 	}
@@ -266,7 +266,7 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 		random_velocity = sample_random(MIN_PEDESTRIAN_SPEED, MAX_PEDESTRIAN_SPEED);
 	}
 	if (y_cross < pedestrian_state.y) random_velocity *= -1.0;
-	int num_time_steps_needed = (int)ceil((abs(y_cross - pedestrian_state.y) / random_velocity)/TIME_STEP_DURATION);
+	int num_time_steps_needed = (int)ceil(((y_cross - pedestrian_state.y) / random_velocity)/TIME_STEP_DURATION);
 	num_time_steps_needed = abs(num_time_steps_needed);
 /* CHANGED!!	
 	for (int i = 0; i < num_time_steps_needed; i++) {
@@ -277,12 +277,13 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 	pedestrian::action new_action = {0.0, random_velocity, num_time_steps_needed};
 	actions.push(new_action);
 
+	assert(sample_goal_location_x <= PAVEMENT_LEFT_X_MAX || sample_goal_location_x >= PAVEMENT_RIGHT_X_MIN);
 	double random_velocity1 = 0.0;
 	while (random_velocity1 == 0.0) {
 		random_velocity1 = sample_random(MIN_PEDESTRIAN_SPEED, MAX_PEDESTRIAN_SPEED);
 	}
 	if (sample_goal_location_x < pedestrian_state.x) random_velocity1 *= -1.0;
-	int num_time_steps_needed1 = (int)ceil((abs(sample_goal_location_x - pedestrian_state.x) / random_velocity1)/TIME_STEP_DURATION);
+	int num_time_steps_needed1 = (int)ceil(((sample_goal_location_x - pedestrian_state.x) / random_velocity1)/TIME_STEP_DURATION);
 	num_time_steps_needed1 = abs(num_time_steps_needed1);
 	/* CHANGED!!
 	for (int i = 0; i < num_time_steps_needed1; i++) {
@@ -298,7 +299,7 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::queue<ped
 		random_velocity2 = sample_random(MIN_PEDESTRIAN_SPEED, MAX_PEDESTRIAN_SPEED);
 	}
 	if (sample_goal_location_y < y_cross) random_velocity2 *= -1.0;
-	int num_time_steps_needed2 = (int)ceil((abs(sample_goal_location_y - pedestrian_state.y) / random_velocity2)/TIME_STEP_DURATION);
+	int num_time_steps_needed2 = (int)ceil(((sample_goal_location_y - pedestrian_state.y) / random_velocity2)/TIME_STEP_DURATION);
 	num_time_steps_needed2 = abs(num_time_steps_needed2);
 	/* CHANGED!! 
 	for (int i = 0; i < num_time_steps_needed2; i++) {
