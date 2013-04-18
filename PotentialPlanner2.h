@@ -65,6 +65,7 @@ class PotentialPlanner2 : public Planner {
 		//private functions
 		bool isDangerous(State astate);
 		bool isVeryDangerous(State astate);
+		bool isSemiDangerous(State astate);
 		//Vector2D calcPartialForce(State astate);
 		dd goalForce();
 		Vector2D calcForce(Pedestrian &apedestrian);

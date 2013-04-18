@@ -4,6 +4,7 @@
 
 #define DANGEROUS_Y_DIST 7.0
 #define DANGEROUS_X_DIST 3.0
+#define BUFFER_DIST 0.2
 
 bool PotentialPlanner2::isDangerous(State astate)
 {
@@ -35,6 +36,15 @@ bool PotentialPlanner2::isDangerous(State astate)
 	return false;
 }
 
+bool PotentialPlanner2::isSemiDangerous(State astate)
+{
+	double dx = astate.x - car->getX();
+	double dy = astate.y - car->getY();
+	double dist = sqrt(dx*dx + dy*dy);
+	if (astate.y > car->getY() - car->getLength()/2 + BUFFER_DIST && dist < 4.0) return true;
+	return false;
+}
+
 bool PotentialPlanner2::isVeryDangerous(State astate)
 {
 	//Very dangerous if would crash in 0.5s
@@ -46,7 +56,7 @@ bool PotentialPlanner2::isVeryDangerous(State astate)
 	double dxx = dx*sin(theta) - dy*cos(theta);
 	double dyy = dx*cos(theta) + dy*sin(theta);
 	
-	if (abs(dyy) < car->getWidth()/2 && dxx-car->getLength()/2 < v/2)
+	if (abs(dyy) < car->getWidth()/2 + BUFFER_DIST && dxx-car->getLength()/2-BUFFER_DIST < v/2)
 	{
 		return true;
 	}
@@ -68,6 +78,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	State astate = apedestrian.getState();
 	bool danger=false;
 	bool veryDangerous=false;
+	bool semiDangerous=false;
 	Vector2D resForce;
 	dd dx = car->getX() - astate.x;
 	dd dy = car->getY() - astate.y;
@@ -83,6 +94,11 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 		}
 
 		apedestrian.setColor(1);
+	}
+	else if (isSemiDangerous(astate))
+	{
+		semiDangerous = true;
+		apedestrian.setColor(3);
 	}
 	else
 	{
@@ -107,6 +123,11 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	{
 		resForce.x *= 1e5;
 		resForce.y *= 1e5;
+	}
+	else if (semiDangerous)
+	{
+		resForce.x *= 3.0;
+		resForce.y *= 3.0;
 	}
 
 	if (resForce.y > 0) resForce.y = 0;

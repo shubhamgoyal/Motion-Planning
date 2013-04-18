@@ -47,17 +47,12 @@ static void Reshape(int width, int height)
     glScalef(20.0/height,7.0/width,1);
 }
 /********************/
-
-
-
-
-static void Draw(void)
+static void drawEnv(double scaleX, double scaleY, double dx, double dy)
 {
-   glClear(GL_COLOR_BUFFER_BIT);
-
 	/*Draw environment*/
 	glPushMatrix();
-	//glTranslatef(0,-car.getY() + 10,0);
+	glScalef(scaleX, scaleY, 1);
+	glTranslatef(dx,dy,0);
 	//BACKGROUND GRASS
 	glColor3f(0.6,0.8,0.195);
 	glBegin(GL_QUADS);
@@ -123,6 +118,114 @@ static void Draw(void)
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
 	glPopMatrix();
+
+}
+
+
+
+static void Draw(void)
+{
+   glClear(GL_COLOR_BUFFER_BIT);
+
+	/*Draw environment*//*
+	glPushMatrix();
+	//glTranslatef(0,-car.getY() + 10,0);
+	//BACKGROUND GRASS
+	glColor3f(0.6,0.8,0.195);
+	glBegin(GL_QUADS);
+		glVertex2f(X_MIN,Y_MIN);
+		glVertex2f(X_MIN,Y_MAX);
+		glVertex2f(X_MAX,Y_MAX);
+		glVertex2f(X_MAX,Y_MIN);
+	glEnd();
+
+	//BACKGROUND PAVEMENT
+	glColor3f(0.63,0.32,0.18);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
+	glEnd();
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MIN);
+	glEnd();
+
+	//ROAD
+	glColor3f(0.3,0.3,0.3);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
+	glEnd();
+
+	//ZEBRA CROSS
+	glColor3f(0.75,0.9,0.9);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MIN);
+	glEnd();
+	glColor3f(0.75,0.9,0.9);
+	glBegin(GL_QUADS);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MIN);
+		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MAX);
+		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MIN);
+	glEnd();
+
+	/*Draw static lines every 50m*//*
+	glColor3f(0.1,0.1,0.1);
+	glBegin(GL_LINES);
+		int numLine=10;
+		for (int i=0;i<numLine;++i)
+		{
+			glVertex2f(X_MIN,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
+			glVertex2f(X_MAX,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
+		}
+	glEnd();
+
+	/*Draw object*//*
+   car.draw();
+   for (int i=0;i<pedestrians.size();++i)
+      pedestrians[i].draw();
+	glPopMatrix();
+	*/
+	
+	//Draw overview:
+	drawEnv(1.0,1.0,-15.0,-10.0);
+	
+	//Draw 2 lines that always changes
+	double shiftLength = (Y_MAX-Y_MIN)/5.0;
+	double shownLength = (Y_MAX-Y_MIN)*3.0/10.0;
+	static double curShift1 = 0;
+	static double curShift2 = shiftLength;
+
+	if ( !(car.getY() - curShift1 >= Y_MAX-2*shiftLength) && car.getY() >= curShift1 - 2*shiftLength && car.getY() - curShift1 > shownLength) 
+	{
+		curShift1 += 2*shiftLength;
+		if (curShift1 >= Y_MAX-1.0 && curShift1 <= Y_MAX+1.0) 
+		{
+			curShift1 = 0.0;
+		}
+	}
+	if ( !(car.getY() - curShift2 >= Y_MAX-2*shiftLength) && car.getY() >= curShift2 - 2*shiftLength && car.getY() - curShift2 > shownLength) 
+	{
+		curShift2 += 2*shiftLength;
+		if (curShift2 >= Y_MAX-1.0 && curShift2 <= Y_MAX+1.0) 
+		{
+			curShift2 = 0.0;
+		}
+	}
+	if (car.getY() < curShift1 - 2*shiftLength && car.getY() + (Y_MAX-Y_MIN) - curShift1 > shownLength) curShift1 += 2*shiftLength - (Y_MAX - Y_MIN);
+	if (car.getY() < curShift2 - 2*shiftLength && car.getY() + (Y_MAX-Y_MIN) - curShift2 < shownLength ) curShift2 += 2*shiftLength - (Y_MAX - Y_MIN);
+	drawEnv(1.2,3.0,40,-5-curShift1);
+	drawEnv(1.2,3.0,20,-5-curShift2);
 
    glutSwapBuffers();
    glFlush();
