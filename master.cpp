@@ -246,12 +246,14 @@ void execute() {
 	static unsigned int count = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
-		timeFromStart = (float)(clock()-start)/CLOCKS_PER_SEC/2.0;
+		timeFromStart = (float)((double)(clock()-start)/CLOCKS_PER_SEC/2.0);
 		count++;
 		//debug
 		if (count >= 15)
 		{
-			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: %u, time: %f\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numCollision, timeFromStart);
+			time_t now;
+			time(&now);
+			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: %u, time: %f, time2: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numCollision, timeFromStart, difftime(now,start2));
 			count=0;
 		}
 		
@@ -268,10 +270,14 @@ void execute() {
 		for (int j=0; j< NUMBER_OF_PEDESTRIANS; j++) {
 			if (carHitPedestrian(previousCarState, car.getState(), pedestrians[j].getState()))
 					numCollision++;
-			if (pedestrians[j].getY() > car.getY() - car.getLength() && pedestrians[j].getY() < car.getY() + 100)
+			if (pedestrians[j].getY() < car.getY() + 100)
 			{
-				seenPedestrians.push_back(&pedestrians[j]);
-				pedestrians[j].setColor(0);
+				if (pedestrians[j].getY() > car.getY()-car.getLength() || pedestrians[j].getY() < (car.getY()-400))
+				{
+					seenPedestrians.push_back(&pedestrians[j]);
+					pedestrians[j].setColor(0);
+				}
+				else pedestrians[j].setColor(2);
 			}
 			else pedestrians[j].setColor(2);
 		}
@@ -319,6 +325,7 @@ int main() {
 	pthread_t thread;
 	pthread_t gui_thread;
 	start = clock();
+	time(&start2);
 	pthread_create(&thread, NULL, &control, NULL);
 	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
 	execute();

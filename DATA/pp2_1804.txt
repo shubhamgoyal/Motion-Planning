@@ -1,0 +1,4 @@
+Max_speed: 25m/s
+dangerous_y_dist: 4.0m
+y_tot= 323913.23m
+NumCollide: 42

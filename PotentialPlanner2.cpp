@@ -2,16 +2,19 @@
 #include <cassert>
 #include "PotentialPlanner2.h"
 
-#define DANGEROUS_Y_DIST 4.0
+#define DANGEROUS_Y_DIST 7.0
 #define DANGEROUS_X_DIST 3.0
 
 bool PotentialPlanner2::isDangerous(State astate)
 {
+	double hlength = car->getLength()/2;
+	double hwidth = car->getWidth()/2;
 	double dy = astate.y - car->getY();
 	double dx = astate.x - car->getX();
 	double dist = sqrt(dx*dx + dy*dy);
 	double safetyBuffer = 1.6;
-	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+50) {
+	double dangerZone = 50.0;
+	if ( (dy > hlength && dy < dangerZone) || (dy < -hlength && dy < Y_MAX - dangerZone)) {
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
 		//reach the pedestrian y position

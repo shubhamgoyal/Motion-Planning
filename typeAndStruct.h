@@ -12,6 +12,7 @@ typedef double dd;
 //for car
 #define CARLENGTH 3.0
 #define CARWIDTH 1.6
+#define Y_VISIBLE 100
 
 //for pedestrian
 #define PEDESTRIAN_SIZE 5

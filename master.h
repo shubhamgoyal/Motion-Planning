@@ -24,7 +24,7 @@ State previousCarState;
 unsigned int numCollision = 0;
 bool carHitPedestrian(State previousCarState, State currentCarState, State pedestrianState);
 clock_t start;
-
+time_t start2;
 float timeFromStart=0;
 dd yTotal = 0;
 
