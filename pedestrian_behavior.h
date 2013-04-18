@@ -66,7 +66,7 @@ Case 4: We sample a random number and the pedestrian stops for that many time st
 #include "pedestrian_actions.h"
 #include "car.h"
 
-#include <queue>
+#include <deque>
 #include <time.h>
 #include <stdlib.h>
 
@@ -75,11 +75,11 @@ Case 4: We sample a random number and the pedestrian stops for that many time st
 
 class Pedestrian_Behavior {
 protected:
-	void insert_new_long_term_goal (std::queue<pedestrian::action> &actions, State& pedestrian_state, int& action_type);
-	void insert_long_term_exit(std::queue<pedestrian::action> &actions, State& pedestrian_state);
-	void insert_long_term_walk_same_pavement(std::queue<pedestrian::action> &actions, State& pedestrian_state);
-	void insert_long_term_walk_opposite_pavement(std::queue<pedestrian::action> &actions, State& pedestrian_state);
-	void insert_long_term_stop(std::queue<pedestrian::action> &actions);
+	void insert_new_long_term_goal (std::deque<pedestrian::action> &actions, State& pedestrian_state, int& action_type);
+	void insert_long_term_exit(std::deque<pedestrian::action> &actions, State& pedestrian_state);
+	void insert_long_term_walk_same_pavement(std::deque<pedestrian::action> &actions, State& pedestrian_state);
+	void insert_long_term_walk_opposite_pavement(std::deque<pedestrian::action> &actions, State& pedestrian_state);
+	void insert_long_term_stop(std::deque<pedestrian::action> &actions);
 	double sample_random(double min_value, double max_value);
 	double sample_normal_random(double min_value, double max_value, double mean, double stddev);
 	int isExit;
@@ -95,7 +95,7 @@ public:
 		environment = Environment();
 
 	};
-	void update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type);
+	void update_state (std::deque<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type);
 
 
 private:

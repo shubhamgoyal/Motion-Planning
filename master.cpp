@@ -44,7 +44,8 @@ static void Reshape(int width, int height)
     glLoadIdentity();
 	 glRotatef(90.0,0,0,1.0);
     glTranslatef(-0.5,-0.8,0);
-    glScalef(20.0/height,7.0/width,1);
+    //glScalef(20.0/height,7.0/width,1);
+    glScalef(13.0/height,4.5/width,1);
 }
 /********************/
 static void drawEnv(double scaleX, double scaleY, double dx, double dy)
@@ -201,7 +202,7 @@ static void Draw(void)
 	*/
 	
 	//Draw overview:
-	drawEnv(1.0,1.0,-15.0,-10.0);
+	drawEnv(1.0,1.0,-5.0,-10.0);
 	
 	//Draw 2 lines that always changes
 	double shiftLength = (Y_MAX-Y_MIN)/3.0;
@@ -235,7 +236,7 @@ static void update(int value)
 
 void* gui(void* args) {
 	/* debug */
-	printf("### in GUI ###\n");
+	//printf("### in GUI ###\n");
 	//THE GUI
 	int tempZero=0;
    glutInit(&tempZero, NULL);
@@ -287,12 +288,12 @@ State getRandomPedestrianState()
 }
 
 void initialize_environment() {
-	printf("-----INITIALIZE-----\n");
+	//printf("-----INITIALIZE-----\n");
 	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
 	car = Car(initialCarState, CARLENGTH, CARWIDTH);
 	previousCarState = initialCarState;
 	for (int i = 0; i < NUMBER_OF_PEDESTRIANS; i++) {
-		printf("%d\n",i);
+		//printf("%d\n",i);
 		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior(car)), NUMBER_OF_TIMESTEPS)));
 		if (pedestrians[i].getY() < 100) seenPedestrians.push_back(&pedestrians[i]);
 	}
@@ -327,8 +328,8 @@ bool carHitPedestrian(State previousCarState, State currentCarState, State pedes
 	bool prevInside = isPointInsideCar(previousCarState, pedX, pedY);
 	
 	/* DEBUGGING */
-	//if (curInside) {printf("\n---HELLO1\n");exit(0);}
-	//if (prevInside) {printf("\n---HELLO2---\n");exit(0);}
+	//if (curInside) {//printf("\n---HELLO1\n");exit(0);}
+	//if (prevInside) {//printf("\n---HELLO2---\n");exit(0);}
 	/*************/
 	
 	if ( curInside && !prevInside)
@@ -340,19 +341,18 @@ bool carHitPedestrian(State previousCarState, State currentCarState, State pedes
 }
 
 void execute() {
-	printf("-----EXECUTE-----\n");
+	//printf("-----EXECUTE-----\n");
 	clock_t before;
 	static unsigned int count = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
-		timeFromStart = (float)((double)(clock()-start)/CLOCKS_PER_SEC/2.0);
 		count++;
 		//debug
-		if (count >= 15)
+		if (count >= 150)
 		{
 			time_t now;
 			time(&now);
-			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %f, time2: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, timeFromStart, difftime(now,start2));
+			printf("\n%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, difftime(now,start2));
 			count=0;
 		}
 		
@@ -395,7 +395,7 @@ void execute() {
 		
 		while ( (float)(clock()-before) < 1e-2*(CLOCKS_PER_SEC)  )
 		{
-		//	printf("diff: %e\n", (float)(after-before)/CLOCKS_PER_SEC);
+		//	//printf("diff: %e\n", (float)(after-before)/CLOCKS_PER_SEC);
 		}
 		
 
@@ -406,7 +406,7 @@ void execute() {
 /*
 void* control(void* args) {
 	//debug
-	printf("---In control---\n");
+	//printf("---In control---\n");
 	while (true) {
 		planner.plan(pedestrians);
 	}
@@ -416,7 +416,7 @@ void* control(void* args) {
 
 void* control(void* args) {
 	//debug
-	printf("---In control---\n");
+	//printf("---In control---\n");
 	while (true) {
 		planner.plan(seenPedestrians);
 	}
@@ -427,7 +427,6 @@ int main() {
 	initialize_environment();
 	pthread_t thread;
 	pthread_t gui_thread;
-	start = clock();
 	time(&start2);
 	pthread_create(&thread, NULL, &control, NULL);
 	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);

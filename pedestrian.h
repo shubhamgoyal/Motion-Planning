@@ -2,7 +2,7 @@
 #define PEDESTRIAN
 
 #include <vector>
-#include <queue>
+#include <deque>
 #include <GL/glut.h>
 #include "Object.h"
 #include "pedestrian_actions.h"
@@ -12,7 +12,7 @@ class Pedestrian: public Object {
 
 protected:
 	//std::vector<pedestrian::action> actions;
-	std::queue<pedestrian::action> actions;
+	std::deque<pedestrian::action> actions;
 	Pedestrian_Behavior behavior;
 	int color;
 	int action_type;

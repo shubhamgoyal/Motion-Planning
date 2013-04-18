@@ -48,7 +48,7 @@ void Pedestrian::draw()
 					glColor3f(0.0,0.0,1.0);
 					break;
 				case 2:
-					glColor3f(0.0,1.0,0.0);
+					glColor3f(0.0,0.8,0.0);
 					break;
 				case 3:
 					glColor3f(0.8, 0.8, 0.8);

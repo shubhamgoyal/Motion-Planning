@@ -4,6 +4,7 @@
 
 #define DANGEROUS_Y_DIST 2.0
 #define DANGEROUS_X_DIST 3.0
+#define DANGEROUS_VELOCITY 8.0
 #define BUFFER_DIST 0.13
 
 bool PotentialPlanner2::isDangerous(State astate)
@@ -96,6 +97,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	dd dist = sqrt(dx*dx + dy*dy);
 	dd y_factor = DANGEROUS_Y_DIST/dist;
 	dd x_factor = DANGEROUS_X_DIST/(abs(dx)+0.001);
+	dd v_factor = car->getV()/DANGEROUS_VELOCITY;
 	if (isDangerous(astate))
 	{
 		danger = true;
@@ -121,7 +123,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (dy > -car->getLength()/2) forceVal=0.0;
 
 	resForce.x = x_factor*forceVal*dx/dist;
-	resForce.y = (forceVal*dy/dist)*(car->getV()/7.0)*(car->getV()/4.0);
+	resForce.y = (forceVal*dy/dist)*v_factor*v_factor*v_factor*v_factor;
 	if (danger && !veryDangerous) 
 	{
 		resForce.x = -3.0*cos(astate.theta)*abs(resForce.x)*x_factor;
