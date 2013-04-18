@@ -19,10 +19,11 @@ class PotentialPlanner2 : public Planner {
 	public:
 		//constructor
 		PotentialPlanner2():m_charge(3.0) {};
-		PotentialPlanner2(Car& acar, std::vector<Pedestrian*> apedestrians):Planner(acar, apedestrians),m_charge(3.0){}
+		PotentialPlanner2(Car& acar, std::vector<Pedestrian*> apedestrians):Planner(acar, apedestrians),m_charge(3.0),hlength(acar.getLength()/2),hwidth(acar.getWidth()/2){}
 
 		//public functions
 		void plan(std::vector<Pedestrian*> &apedestrians);
+		void drawForce();
 
 	protected:
 
@@ -53,26 +54,19 @@ class PotentialPlanner2 : public Planner {
 
 		Vector2D m_force;
 		Control m_control;
-		/* This is to implement force in the X direction.
-			We need to discretize the pedestrian (many pedestrian
-			in one place should be condsidered as one
-			*/
-		/*
-		int cellIndex[2][500];
-		vector <Cell> cells;
-		*/
+		dd m_charge;
 		
 		//private functions
 		bool isDangerous(State astate);
 		bool isVeryDangerous(State astate);
 		bool isSemiDangerous(State astate);
-		//Vector2D calcPartialForce(State astate);
 		dd goalForce();
 		Vector2D calcForce(Pedestrian &apedestrian);
 		void calcTotalForce();
 		Control convertForceToControl(Vector2D f);
-		dd m_charge;
 
+		//Car property (to shorten code)
+		double hlength, hwidth; //half of length and width
 };
 
 

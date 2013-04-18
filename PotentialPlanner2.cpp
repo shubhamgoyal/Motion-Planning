@@ -4,13 +4,14 @@
 
 #define DANGEROUS_Y_DIST 7.0
 #define DANGEROUS_X_DIST 3.0
-#define BUFFER_DIST 0.2
+#define BUFFER_DIST 0.13
 
 bool PotentialPlanner2::isDangerous(State astate)
 {
-	double hlength = car->getLength()/2;
-	double hwidth = car->getWidth()/2;
+	//double hlength = car->getLength()/2;
+	//double hwidth = car->getWidth()/2;
 	double dy = astate.y - car->getY();
+	if (dy < -Y_MAX+Y_VISIBLE) dy += Y_MAX-Y_MIN;
 	double dx = astate.x - car->getX();
 	double dist = sqrt(dx*dx + dy*dy);
 	double safetyBuffer = 1.6;
@@ -19,20 +20,20 @@ bool PotentialPlanner2::isDangerous(State astate)
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
 		//reach the pedestrian y position
-		dd tt = (y - car->getY())/car->getV();
-		if (x < car->getX()+car->getWidth()/2 && v*cos(theta)>0.0001) {
+		dd tt = dy/car->getV();
+		if (dx < hwidth+BUFFER_DIST && v*cos(theta)>0.0001) {
 			//We times 1.5 to consider the car deceleration
-			if (x + tt*v*cos(theta)*safetyBuffer > car->getX() - car->getWidth()/2)
+			if (dx + tt*v*cos(theta)*safetyBuffer > -hwidth - BUFFER_DIST)
 				return true;
 		}
-		if (x > car->getX()-car->getWidth()/2 && v*cos(theta)<0.0001) {
-			if (x + tt*v*cos(theta)*safetyBuffer < car->getX() + car->getWidth()/2)
+		if (dx > -hwidth-BUFFER_DIST && v*cos(theta)<0.0001) {
+			if (dx + tt*v*cos(theta)*safetyBuffer < hwidth+BUFFER_DIST)
 				return true;
 		}
-		if (x < car->getX()+car->getWidth()/2 && x > car->getX()-car->getWidth()/2 && y - car->getY() < DANGEROUS_Y_DIST) return true;
+		if (dx < hwidth+BUFFER_DIST && dx > -hwidth-BUFFER_DIST && dy < DANGEROUS_Y_DIST) return true;
 
 	}
-	if (astate.y > car->getY()-car->getLength()/2 && dist < 2.0) return true;
+	if (dy > -hlength && dist < 2.0) return true;
 	return false;
 }
 
@@ -40,8 +41,10 @@ bool PotentialPlanner2::isSemiDangerous(State astate)
 {
 	double dx = astate.x - car->getX();
 	double dy = astate.y - car->getY();
+	if (dy < -Y_MAX+Y_VISIBLE) dy+= Y_MAX-Y_MIN;
 	double dist = sqrt(dx*dx + dy*dy);
-	if (astate.y > car->getY() - car->getLength()/2 + BUFFER_DIST && dist < 4.0) return true;
+	//double hlength = car->getLength()/2;
+	if (dy > -hlength + BUFFER_DIST && dist < 5.0) return true;
 	return false;
 }
 
@@ -50,13 +53,20 @@ bool PotentialPlanner2::isVeryDangerous(State astate)
 	//Very dangerous if would crash in 0.5s
 	double dx = astate.x - car->getX();
 	double dy = astate.y - car->getY();
+	if (dy < (double)-Y_MAX+Y_VISIBLE) dy += (double)Y_MAX-Y_MIN;
+	double dist = sqrt(dx*dx + dy*dy);
 	double theta = car->getTheta();
 	double v = car->getV();
+	//double hwidth = car->getWidth()/2;
+	//double hlength= car->getLength()/2;
 	//THE COORDINATE OF THE astate base on car coordinate system
 	double dxx = dx*sin(theta) - dy*cos(theta);
 	double dyy = dx*cos(theta) + dy*sin(theta);
-	
-	if (abs(dyy) < car->getWidth()/2 + BUFFER_DIST && dxx-car->getLength()/2-BUFFER_DIST < v/2)
+	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 && dyy-hlength-BUFFER_DIST < v/2)
+	{	return true;}
+	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 && dyy -hlength -BUFFER_DIST < 0.8)
+	{	return true;}
+	if (dyy > hlength && dist <2.2) 
 	{
 		return true;
 	}
@@ -82,18 +92,15 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	Vector2D resForce;
 	dd dx = car->getX() - astate.x;
 	dd dy = car->getY() - astate.y;
+	if (dy > Y_MAX -Y_VISIBLE) dy -= (Y_MAX - Y_MIN);
 	dd dist = sqrt(dx*dx + dy*dy);
 	dd y_factor = DANGEROUS_Y_DIST/dist;
 	dd x_factor = DANGEROUS_X_DIST/(abs(dx)+0.001);
 	if (isDangerous(astate))
 	{
 		danger = true;
-		if (isVeryDangerous(astate))
-		{
-			veryDangerous = true;
-		}
-
 		apedestrian.setColor(1);
+
 	}
 	else if (isSemiDangerous(astate))
 	{
@@ -103,6 +110,11 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	else
 	{
 		apedestrian.setColor(0);
+	}
+	if (isVeryDangerous(astate))
+	{
+		veryDangerous = true;
+		apedestrian.setColor(4);
 	}
 	dd forceVal = m_charge*car->getV()/(dist*dist);
 
@@ -121,8 +133,10 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	}
 	else if (veryDangerous)
 	{
-		resForce.x *= 1e5;
-		resForce.y *= 1e5;
+		double theta = car->getTheta();
+		double bigCharge = 1e10;
+		resForce.x -= bigCharge*cos(theta);
+		resForce.y -= bigCharge*sin(theta);
 	}
 	else if (semiDangerous)
 	{
@@ -139,21 +153,24 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 
 void PotentialPlanner2::calcTotalForce() 
 {
+	Vector2D temp_force;
+	setVector2D(temp_force,0.0,0.0);
 	for (int i=0;i<pedestrians->size();++i)
 	{
-		m_force = addVector2D(m_force, calcForce( *((*pedestrians)[i]) ));
+		temp_force = addVector2D(temp_force, calcForce( *((*pedestrians)[i]) ));
 	}
 	//ADD THE GOAL EFFECT
-	m_force.y += 75.0*m_charge;
+	temp_force.y += 60.0*m_charge;
 
 	//ADD THE ROAD EFFECT
 	dd isInside = 1.0;
 	dd dx_left = car->getX()-PAVEMENT_LEFT_X_MAX;
 	dd dx_right = car->getX()-PAVEMENT_RIGHT_X_MIN;
 	if (!(car->getX() > PAVEMENT_LEFT_X_MAX && car->getX() < PAVEMENT_RIGHT_X_MIN)) isInside=-1.0;
-	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_left*dx_left*dx_left);
-	m_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_right*dx_right*dx_right);
+	temp_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_left*dx_left*dx_left);
+	temp_force.x += (10.0*10.0)*isInside*m_charge*abs(car->getV()*cos(car->getTheta()))/(dx_right*dx_right*dx_right);
 
+	m_force = temp_force;
 }
 
 Control PotentialPlanner2::convertForceToControl(Vector2D f)
@@ -162,7 +179,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	dd norm2 = 3e-4;
 	dd maxAccel = 1e-2;
 	if (car->getV() < 3) maxAccel = 5e-2;
-	dd minAccel = -1.2e-1;
+	dd minAccel = -1.0e-1;
 	//dd minAccel = -2e-2;
 	dd maxRotate = 3e-4;
 	dd maxAbsTheta = 1.5e-1;
@@ -238,16 +255,33 @@ void PotentialPlanner2::plan(std::vector<Pedestrian*> &apedestrians)
 	std::deque<Control> tempPath;
 
 	pedestrians = &apedestrians;
-	setVector2D(m_force,0.0,0.0);
 	calcTotalForce();
 	tempPath.push_back(convertForceToControl(m_force));
-	//path.push_back(convertForceToControl(force));
 	pthread_mutex_lock(&car->mutex_path);
-	//car->setPath(path);
 	path->swap(tempPath);
 	pthread_mutex_unlock(&car->mutex_path);
 
 }
 
+void PotentialPlanner2::drawForce()
+{
+	double fx=m_force.x, fy=m_force.y;
+	double sizeF = sqrt(fx*fx+fy*fy);
+	if (sizeF > 5.0) sizeF=5.0;
+	glColor3f(0.1,0.5,1.0);
+	glPushMatrix();
+	glTranslatef(car->getX(), car->getY(),0);
+	glRotatef(atan2(fy,fx)*180.0/M_PI,0,0,1);
+	glBegin(GL_LINES);
+		glVertex2f(0.0,0.0);
+		glVertex2f(sizeF,0.0);
+	glEnd();
+	glBegin(GL_TRIANGLES);
+		glVertex2f(sizeF,0.3);
+		glVertex2f(sizeF,-0.3);
+		glVertex2f(sizeF+0.5,0.0);
+	glEnd();
+	glPopMatrix();
+}
 
 		

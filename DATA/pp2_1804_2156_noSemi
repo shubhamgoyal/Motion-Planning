@@ -1,0 +1,13 @@
+yTotal: 600025m
+MaxV: 25 m/s
+MaxDecel: 1.2 m/s^2
+TotalTIme: 47408 s
+numCollide: 65
+
+PEDESTRIAN:
+   number: 500 
+   chanceExit: 0
+   chanceStop: 15
+   chanceWalkSamePavement: 35
+   chanceCross: 50
+

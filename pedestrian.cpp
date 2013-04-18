@@ -13,7 +13,11 @@ void Pedestrian::update_state(double time_step) {
 
 void Pedestrian::draw()
 {
-	if (color == 3)
+	if (color == 4)
+	{
+		glColor3f(1.0, 0.6, 0.0);
+	}
+	else if (color == 3)
 	{
 		glColor3f(0.5, 0.1, 0.1);
 	}

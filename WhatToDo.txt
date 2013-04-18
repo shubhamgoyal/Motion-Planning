@@ -5,7 +5,7 @@ List what to be finished:
 	a) It sometimes move outside of the pavement.
 		This maybe due to the fact that we just count
 		the number of needed steps. And this is just
-		approximated (Rounded to the above integers).
+		approximated (Rounded to the above integers). --- FIXED ----
 	b) Some pedestrians sometimes go outside the
 		environment (Y > Y_MAX) ... Don't know why.
 
@@ -18,14 +18,14 @@ List what to be finished:
 	a) Must be able to detect collision
 	b) Must be able to measure the time needed
 	   for the car to move from Y_MIN to Y_MAX
-	c) If possible, allow batch measuring
+	c) If possible, allow batch measuring --- HOW??? ---
 
-5) Create better GUI:
+5) Create better GUI: 
 	a) Apply some picture for the car
 	b) create 2 lines and the car can continue to the 
 	   second line after the first line and move back
 		to the first line afterward (the other line 
-		always give the road ahead)
+		always give the road ahead) ---- ALMOST DONE ----
 
 6) Create smarter pedestrian:
 	a) have some reaction to the car (don't know exactly how...)
@@ -44,3 +44,8 @@ List what to be finished:
 	b) I have tried creating this, but somehow failed.
 		The initialization already done. But the event
 		after always changing. (Due to thread??).
+
+
+8) Configure the planner:
+	a) Reduce the maximum braking deceleration
+	b) Reduce the number of collision

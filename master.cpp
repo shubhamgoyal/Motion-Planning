@@ -115,8 +115,11 @@ static void drawEnv(double scaleX, double scaleY, double dx, double dy)
 
 	/*Draw object*/
    car.draw();
+
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
+
+	planner.drawForce();
 	glPopMatrix();
 
 }
@@ -201,29 +204,22 @@ static void Draw(void)
 	drawEnv(1.0,1.0,-15.0,-10.0);
 	
 	//Draw 2 lines that always changes
-	double shiftLength = (Y_MAX-Y_MIN)/5.0;
-	double shownLength = (Y_MAX-Y_MIN)*3.0/10.0;
+	double shiftLength = (Y_MAX-Y_MIN)/3.0;
 	static double curShift1 = 0;
 	static double curShift2 = shiftLength;
+	double y=car.getY();
 
-	if ( !(car.getY() - curShift1 >= Y_MAX-2*shiftLength) && car.getY() >= curShift1 - 2*shiftLength && car.getY() - curShift1 > shownLength) 
+	if (!(y > curShift1+1.5*shiftLength) && (y > curShift1 + shiftLength || y < curShift1-shiftLength))
 	{
 		curShift1 += 2*shiftLength;
-		if (curShift1 >= Y_MAX-1.0 && curShift1 <= Y_MAX+1.0) 
-		{
-			curShift1 = 0.0;
-		}
+		if (curShift1 > Y_MAX-1) curShift1 -= Y_MAX; 
 	}
-	if ( !(car.getY() - curShift2 >= Y_MAX-2*shiftLength) && car.getY() >= curShift2 - 2*shiftLength && car.getY() - curShift2 > shownLength) 
+	if (!(y > curShift2 + 1.5*shiftLength) && (y > curShift2 + shiftLength || y < curShift2-shiftLength))
 	{
 		curShift2 += 2*shiftLength;
-		if (curShift2 >= Y_MAX-1.0 && curShift2 <= Y_MAX+1.0) 
-		{
-			curShift2 = 0.0;
-		}
+		if (curShift2 > Y_MAX-1) curShift2 -= Y_MAX; 
 	}
-	if (car.getY() < curShift1 - 2*shiftLength && car.getY() + (Y_MAX-Y_MIN) - curShift1 > shownLength) curShift1 += 2*shiftLength - (Y_MAX - Y_MIN);
-	if (car.getY() < curShift2 - 2*shiftLength && car.getY() + (Y_MAX-Y_MIN) - curShift2 < shownLength ) curShift2 += 2*shiftLength - (Y_MAX - Y_MIN);
+	
 	drawEnv(1.2,3.0,40,-5-curShift1);
 	drawEnv(1.2,3.0,20,-5-curShift2);
 
@@ -307,8 +303,8 @@ void initialize_environment() {
 
 bool isPointInsideCar(State carState, dd x, dd y)
 {
-	dd hwidth = CARWIDTH/2.0 + 0.1;
-	dd hlength= CARLENGTH/2.0 + 0.1;
+	dd hwidth = CARWIDTH/2.0 + 0.05;
+	dd hlength= CARLENGTH/2.0 + 0.05;
 	dd cx = carState.x;
 	dd cy = carState.y;
 	dd theta = carState.theta;
@@ -338,7 +334,7 @@ bool carHitPedestrian(State previousCarState, State currentCarState, State pedes
 	if ( curInside && !prevInside)
 	{
 		dd prevCarY = previousCarState.y, pedY = pedestrianState.y;
-		if (pedY > prevCarY + CARLENGTH/2*cos(previousCarState.theta) - 0.1) return true;
+		if (pedY > prevCarY + CARLENGTH/2*cos(previousCarState.theta) ) return true;
 	}
 	return false;
 }
@@ -356,7 +352,7 @@ void execute() {
 		{
 			time_t now;
 			time(&now);
-			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: %u, time: %f, time2: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numCollision, timeFromStart, difftime(now,start2));
+			printf("%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %f, time2: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, timeFromStart, difftime(now,start2));
 			count=0;
 		}
 		
@@ -372,7 +368,11 @@ void execute() {
 		seenPedestrians.clear();
 		for (int j=0; j< NUMBER_OF_PEDESTRIANS; j++) {
 			if (carHitPedestrian(previousCarState, car.getState(), pedestrians[j].getState()))
-					numCollision++;
+			{	
+				if (car.getV() < 1.5)
+					numLightCollision++;
+				else numHeavyCollision++;
+			}
 			if (pedestrians[j].getY() < car.getY() + 100)
 			{
 				if (pedestrians[j].getY() > car.getY()-car.getLength() || pedestrians[j].getY() < (car.getY()-400))

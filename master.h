@@ -21,7 +21,8 @@ PotentialPlanner2 planner;
 
 /*For testing */
 State previousCarState;
-unsigned int numCollision = 0;
+unsigned int numLightCollision = 0;
+unsigned int numHeavyCollision = 0;
 bool carHitPedestrian(State previousCarState, State currentCarState, State pedestrianState);
 clock_t start;
 time_t start2;

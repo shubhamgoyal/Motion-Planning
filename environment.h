@@ -44,7 +44,7 @@ struct zebra_crossing {
 	double width;
 };
 
-#define NUMBER_OF_PEDESTRIANS 500
+#define NUMBER_OF_PEDESTRIANS 1000
 #define NUMBER_OF_TIMESTEPS 10000
 #define TIME_STEP_DURATION 5e-3
 
