@@ -2,7 +2,7 @@
 #include <cassert>
 #include "PotentialPlanner2.h"
 
-#define DANGEROUS_Y_DIST 7.0
+#define DANGEROUS_Y_DIST 2.0
 #define DANGEROUS_X_DIST 3.0
 #define BUFFER_DIST 0.13
 
@@ -30,7 +30,7 @@ bool PotentialPlanner2::isDangerous(State astate)
 			if (dx + tt*v*cos(theta)*safetyBuffer < hwidth+BUFFER_DIST)
 				return true;
 		}
-		if (dx < hwidth+BUFFER_DIST && dx > -hwidth-BUFFER_DIST && dy < DANGEROUS_Y_DIST) return true;
+		if (dx < hwidth+BUFFER_DIST && dx > -hwidth-BUFFER_DIST && dy < DANGEROUS_Y_DIST + hlength) return true;
 
 	}
 	if (dy > -hlength && dist < 2.0) return true;

@@ -1,8 +1,7 @@
-yTotal: 10014 m
+yTotal: 330013 m
 maxV: 25 m/s
-maxDeceleration: 10 m/s^2
-numCollide: light=0, heavy=0
-time: 1582 s
+numCollide: light=4, heavy=6
+time: 34241
 
 PEDESTRIAN:
    number: 1000 

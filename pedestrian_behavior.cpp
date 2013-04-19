@@ -5,10 +5,10 @@
 #include <random>
 #include <vector>
 
-void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type) {
+void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions, double time_step, State& pedestrian_state, int& action_type) {	
+	State& p = pedestrian_state;
+	
 	if (isExit && actions.empty()) return;
-	if (pedestrian_state.y < car->getY() - car->getLength()/2 && pedestrian_state.y > car->getY()-Y_MAX+Y_VISIBLE)  action_type = action_type%10 + 10;
-	else	action_type %= 10;
 	if (action_type==0 || actions.empty() ) {
 		insert_new_long_term_goal(actions, pedestrian_state, action_type);
 	}
@@ -21,6 +21,21 @@ void Pedestrian_Behavior::update_state (std::queue<pedestrian::action> &actions,
 	//printf("Size of actions: %d\n", actions.size());
 		
 	/**/
+	double cx = car->getX();
+	double cy = car->getY();
+	double hlength = car->getLength()/2;
+	double vx = next_action.x_velocity;
+	if (fabs(vx) > 0.01 && p.y < cy+hlength && p.y > cy-hlength && (cx-p.x)/vx < 1)
+	{
+		pedestrian::action new_action = {0.0, -fabs(vx), 1000};
+		actions.push(new_action);
+		action_type = action_type%10 + 10;
+	}
+	else
+	{
+		action_type %= 10;
+	}
+
 	pedestrian_state.x = pedestrian_state.x + next_action.x_velocity * time_step;
 	pedestrian_state.y = pedestrian_state.y + next_action.y_velocity * time_step;
 

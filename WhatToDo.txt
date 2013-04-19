@@ -15,7 +15,9 @@ List what to be finished:
 		who are visible to the car (100m ahead?)
 
 4) Create a test system: ----ALMOST DONE-----
-	a) Must be able to detect collision
+	a) Must be able to detect collision:
+		i) differentiate the collision by speed.
+			Output the number of collision to a file.
 	b) Must be able to measure the time needed
 	   for the car to move from Y_MIN to Y_MAX
 	c) If possible, allow batch measuring --- HOW??? ---
@@ -28,6 +30,7 @@ List what to be finished:
 		always give the road ahead) ---- ALMOST DONE ----
 
 6) Create smarter pedestrian:
+	*) make the pedestrian go behind car (instead go through it)
 	a) have some reaction to the car (don't know exactly how...)
 	b) but must make sure the car still need
 	   to avoid something. Otherwise, the car
