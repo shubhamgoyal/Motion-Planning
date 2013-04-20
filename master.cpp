@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <random>
 #include <GL/glut.h>
 
@@ -126,13 +127,37 @@ static void drawEnv(double scaleX, double scaleY, double dx, double dy)
 }
 
 
+static void drawText(double x, double y, double scale_x, double scale_y, double thickness, char* str)
+{
+	//double chWidth = 90.0;
+	double curShift = x;
+	glLineWidth(thickness);
+	glColor3f(0.76,0.76,0.76);
+	for (unsigned int i=0; i<strlen(str);++i)
+	{
+		int chInd = 0;
+		glPushMatrix();
+		glRotatef(-90.0, 0,0,1);
+		glScalef(1/scale_x, 1/scale_y,1.0);
+		if ( str[i] >= 'a' && str[i] <= 'z' ) chInd = str[i]-'a'+27;
+		else if (str[i] >= 'A' && str[i] <= 'Z' ) chInd = str[i]-'A'+1;
+		else if (str[i] >= '0' && str[i] <= '9') chInd = str[i] -'0'+53;
+		
+		glTranslatef(curShift,y,0.0);
+		curShift += chWidth[chInd];
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, str[i]);
+		glPopMatrix();
+	}
+	glLineWidth(2.0);
+}
 
 static void Draw(void)
 {
    glClear(GL_COLOR_BUFFER_BIT);
 
 	//Draw overview:
-	drawEnv(1.0,1.0,-5.0,-40.0);
+	drawEnv(1.0,1.07,0.0,-50.0);
+
 	
 	//Draw 2 lines that always changes
 	double shiftLength = (Y_MAX-Y_MIN)/3.0;
@@ -151,8 +176,26 @@ static void Draw(void)
 		if (curShift2 > Y_MAX-1) curShift2 -= Y_MAX; 
 	}
 	
-	drawEnv(1.2,3.0,40,-5-curShift1);
-	drawEnv(1.2,3.0,20,-5-curShift2);
+	drawEnv(1.4,3.2,40,-16.7-curShift1);
+	drawEnv(1.4,3.2,20,-16.7-curShift2);
+
+	double chHeight= 200.0;
+	double initY= -300.0;
+	double initX= -9300.0; 
+	char test[100]="012345678901 abcdefghijklmnopqrstuvwxyza ABCDEFGHIJKLMNOPQRSTUVWXYZA";
+	//drawText(initX,initY,20.0,40.0,2.0, test);
+	//drawText(initX,initY-chHeight,20.0,40.0,2.0, test);
+	char strTemp[1000]= "Overview:";
+	drawText(initX,initY+1000,20.0,40.0,2.0,strTemp);
+	sprintf(strTemp,"Car status:");
+	drawText(initX,initY,20.0,40.0,2.0,strTemp);
+	sprintf(strTemp,"X= %.2lf, Y= %.2lf, V= %.2lf, Theta= %.3lf\'",car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180/M_PI);
+	drawText(initX+400, initY-chHeight, 20.0, 40.0, 2.0, strTemp);
+	sprintf(strTemp,"Experiment status:");
+	drawText(initX, initY-2*chHeight, 20.0, 40.0, 2.0, strTemp);
+	sprintf(strTemp,"Total time= %.2lf, number of collision: light= %u, heavy=%u",curTime, numLightCollision, numHeavyCollision);
+	drawText(initX+400, initY-3*chHeight, 20.0, 40.0, 2.0, strTemp);
+
 
    glutSwapBuffers();
    glFlush();
@@ -173,7 +216,9 @@ void* gui(void* args) {
    glutInitDisplayMode(GLUT_RGB | GLUT_ACCUM | GLUT_DOUBLE);
    //glutInitWindowSize(300, 700);
    glutInitWindowSize(WINDOW_X_SIZE,WINDOW_Y_SIZE);
-	glutCreateWindow("Accum Test");
+	char stTemp[100];
+	sprintf(stTemp, "Planning with %d pedestrians", NUMBER_OF_PEDESTRIANS);
+	glutCreateWindow(stTemp);
    Init();
    glutReshapeFunc(Reshape);
    glutDisplayFunc(Draw);
@@ -286,7 +331,8 @@ void execute() {
 			count2++;
 			time_t now;
 			time(&now);
-			printf("\n%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, difftime(now,start2));
+			curTime = difftime(now, start2);
+			//printf("\n%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, curTime);
 			count=0;
 			if (count2 >= 20)
 			{
@@ -377,7 +423,7 @@ int main() {
 	//scanf("%s",fname);
 	initialize_environment();
 	printf("FINISH INITIALIZE\n");
-	getchar();
+	//getchar();
 	pthread_t thread;
 	pthread_t gui_thread;
 	time(&start2);
@@ -386,6 +432,6 @@ int main() {
 	getchar();
 	pthread_create(&thread, NULL, &control, NULL);
 	printf("START CONTROL\n");
-	getchar();
+	//getchar();
 	execute();
 }
