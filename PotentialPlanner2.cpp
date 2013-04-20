@@ -2,7 +2,7 @@
 #include <cassert>
 #include "PotentialPlanner2.h"
 
-#define DANGEROUS_Y_DIST 2.0
+#define DANGEROUS_Y_DIST 3.0
 #define DANGEROUS_X_DIST 3.0
 #define DANGEROUS_VELOCITY 5.0
 #define BUFFER_DIST 0.13
@@ -14,7 +14,7 @@ bool PotentialPlanner2::isDangerous(const State &astate)
 	double dx = astate.x - car->getX();
 	double dist = sqrt(dx*dx + dy*dy);
 	double safetyBuffer = 1.6;
-	double dangerZone = 50.0;
+	double dangerZone = (car->getV()*2)+2.5;
 	if ( (dy > hlength && dy < dangerZone) ) {
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
@@ -62,11 +62,11 @@ bool PotentialPlanner2::isVeryDangerous(const State &astate)
 	double dyy = dx*cos(theta) + dy*sin(theta);
 
 	//Already pass through the car
-	if (dx*pv > 0 && fabs(dxx) > hwidth + BUFFER_DIST*2) return false;
+	if (dxx*pv > 0 && (dxx > hwidth+BUFFER_DIST  || dxx < -hwidth-BUFFER_DIST) ) return false;
 
 	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy-hlength-BUFFER_DIST < v/2)
 	{	return true;}
-	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy -hlength -BUFFER_DIST < 1.1)
+	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy -hlength -BUFFER_DIST < 1.0)
 	{	return true;}
 	if (dyy > hlength && dist <2.2) 
 	{
@@ -132,11 +132,12 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (danger && !veryDangerous) 
 	{
 		assert (dy <= hlength+BUFFER_DIST);
-		resForce.x = -3.0*cos(astate.theta)*abs(resForce.x)*x_factor*x_factor;
+		if (fabs(atan2(dx,dy)) < M_PI/5.0 );
+			resForce.x = -6.0*cos(astate.theta)*abs(resForce.x)*x_factor*x_factor;
 
 		bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
 		assert( tempAssert || (printf("----xforce: %lf, vxPed: %lf\n-----",resForce.x,apedestrian.getXDot() ),tempAssert));
-		resForce.y *= 1.5e4*y_factor*y_factor*v_factor*v_factor*v_factor*v_factor;
+		resForce.y *= 1.5e4*y_factor*y_factor*v_factor*v_factor*v_factor;
 		if (dist < 12.0) resForce.y *= x_factor*x_factor/4;
 	}
 	else if (veryDangerous)

@@ -1,9 +1,9 @@
 ---PEDESTRIANS---
-number:500, chance of:	Exit= 0, WalkSamePavement: 0, Cross: 100, Stop: 0
+number:1000, chance of:	Exit= 0, WalkSamePavement: 0, Cross: 100, Stop: 0
 
 ---PLANNING---
 maxV: 25.000000, maxDecel: 0.090000 
-yTotal:3183.733196, time: 273.000000
+yTotal:162145.632689, time: 21901.000000
 NumCollide with speed:
 0 to 1	:	0
 1 to 2	:	0

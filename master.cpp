@@ -120,7 +120,7 @@ static void drawEnv(double scaleX, double scaleY, double dx, double dy)
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
 
-	planner.drawForce();
+	//planner.drawForce();
 	glPopMatrix();
 
 }
@@ -228,7 +228,7 @@ void initialize_environment() {
 		
 	//	if (pedestrians[i].getY() < Y_VISIBLE) seenPedestrians.push_back(&pedestrians[i]);
 	}
-	//planner = SimplePlanner(car, pedestrians);
+	//planner = SimplePlanner(car, seenPedestrians);
 	//seenPedestrians.clear();
 	planner = PotentialPlanner2(car, seenPedestrians);
 	//planner = PotentialPlanner(car, pedestrians);

@@ -9,7 +9,7 @@ double min(double a, double b)
 bool SimplePlanner::isDangerous(State astate)
 {
    
-	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+50) {
+	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+15) {
       dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
       //tt is the rough estimate on time needed for the car to 
       //reach the pedestrian y position
@@ -27,33 +27,33 @@ bool SimplePlanner::isDangerous(State astate)
    return false;
 }
 
-bool SimplePlanner::existDangerous(std::vector<Pedestrian> &apedestrians)
+bool SimplePlanner::existDangerous(std::vector<Pedestrian*> &apedestrians)
 {
 	bool state=0;
 	for (int i=0;i<apedestrians.size();++i)
 	{
-		if (isDangerous(apedestrians[i].getState()))
+		if (isDangerous((apedestrians[i])->getState()))
 		{
-				apedestrians[i].setColor(1);
+				(apedestrians[i])->setColor(1);
 				state=1;
 		}
 		else
 		{
-			apedestrians[i].setColor(0);
+			(apedestrians[i])->setColor(0);
 		}
 		
 	}
 	return state;
 }
 
-void SimplePlanner::plan(std::vector<Pedestrian> &apedestrians){
+void SimplePlanner::plan(std::vector<Pedestrian*> &apedestrians){
 	std::deque<Control>tempPath;
 	//pedestrians= apedestrians;
 
-	dd maxV = 10;
+	dd maxV = 15;
 	dd maxTheta = 0.1;
-	dd breakAccel = 0.1;
-	dd speedAccel = 1e-4;
+	dd breakAccel = 0.9e-1;
+	dd speedAccel = 1e-2;
 	Control c;
 	c.h1 = 0;
 	c.h2 = 0;

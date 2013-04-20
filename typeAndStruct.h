@@ -7,7 +7,7 @@ typedef double dd;
 //DEFINITION
 #define _USE_MATH_DEFINES
 #include<cmath>
-#define RANDOM_SEED 1234
+#define RANDOM_SEED 12345
 
 //for car
 #define CARLENGTH 3.0
