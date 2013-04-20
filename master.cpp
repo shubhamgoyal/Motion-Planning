@@ -131,78 +131,8 @@ static void Draw(void)
 {
    glClear(GL_COLOR_BUFFER_BIT);
 
-	/*Draw environment*//*
-	glPushMatrix();
-	//glTranslatef(0,-car.getY() + 10,0);
-	//BACKGROUND GRASS
-	glColor3f(0.6,0.8,0.195);
-	glBegin(GL_QUADS);
-		glVertex2f(X_MIN,Y_MIN);
-		glVertex2f(X_MIN,Y_MAX);
-		glVertex2f(X_MAX,Y_MAX);
-		glVertex2f(X_MAX,Y_MIN);
-	glEnd();
-
-	//BACKGROUND PAVEMENT
-	glColor3f(0.63,0.32,0.18);
-	glBegin(GL_QUADS);
-		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MIN);
-		glVertex2f(PAVEMENT_LEFT_X_MIN,Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
-	glEnd();
-	glBegin(GL_QUADS);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
-		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MAX);
-		glVertex2f(PAVEMENT_RIGHT_X_MAX,Y_MIN);
-	glEnd();
-
-	//ROAD
-	glColor3f(0.3,0.3,0.3);
-	glBegin(GL_QUADS);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MIN);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,Y_MIN);
-	glEnd();
-
-	//ZEBRA CROSS
-	glColor3f(0.75,0.9,0.9);
-	glBegin(GL_QUADS);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MIN);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA1_Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA1_Y_MIN);
-	glEnd();
-	glColor3f(0.75,0.9,0.9);
-	glBegin(GL_QUADS);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MIN);
-		glVertex2f(PAVEMENT_RIGHT_X_MIN,ZEBRA2_Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MAX);
-		glVertex2f(PAVEMENT_LEFT_X_MAX,ZEBRA2_Y_MIN);
-	glEnd();
-
-	/*Draw static lines every 50m*//*
-	glColor3f(0.1,0.1,0.1);
-	glBegin(GL_LINES);
-		int numLine=10;
-		for (int i=0;i<numLine;++i)
-		{
-			glVertex2f(X_MIN,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
-			glVertex2f(X_MAX,Y_MIN+i*(float)(Y_MAX-Y_MIN)/numLine);
-		}
-	glEnd();
-
-	/*Draw object*//*
-   car.draw();
-   for (int i=0;i<pedestrians.size();++i)
-      pedestrians[i].draw();
-	glPopMatrix();
-	*/
-	
 	//Draw overview:
-	drawEnv(1.0,1.0,-5.0,-10.0);
+	drawEnv(1.0,1.0,-5.0,-40.0);
 	
 	//Draw 2 lines that always changes
 	double shiftLength = (Y_MAX-Y_MIN)/3.0;
@@ -236,7 +166,7 @@ static void update(int value)
 
 void* gui(void* args) {
 	/* debug */
-	//printf("### in GUI ###\n");
+	printf("### in GUI ###\n");
 	//THE GUI
 	int tempZero=0;
    glutInit(&tempZero, NULL);
@@ -288,16 +218,18 @@ State getRandomPedestrianState()
 }
 
 void initialize_environment() {
-	//printf("-----INITIALIZE-----\n");
+	printf("-----INITIALIZE-----\n");
 	State initialCarState = {(X_MAX - X_MIN)/2.0, CARLENGTH/2.0, 0.0, M_PI/2.0};
 	car = Car(initialCarState, CARLENGTH, CARWIDTH);
 	previousCarState = initialCarState;
 	for (int i = 0; i < NUMBER_OF_PEDESTRIANS; i++) {
 		//printf("%d\n",i);
 		pedestrians.push_back( *(new Pedestrian( getRandomPedestrianState(),*(new Pedestrian_Behavior(car)), NUMBER_OF_TIMESTEPS)));
-		if (pedestrians[i].getY() < 100) seenPedestrians.push_back(&pedestrians[i]);
+		
+	//	if (pedestrians[i].getY() < Y_VISIBLE) seenPedestrians.push_back(&pedestrians[i]);
 	}
 	//planner = SimplePlanner(car, pedestrians);
+	//seenPedestrians.clear();
 	planner = PotentialPlanner2(car, seenPedestrians);
 	//planner = PotentialPlanner(car, pedestrians);
 }
@@ -341,19 +273,35 @@ bool carHitPedestrian(State previousCarState, State currentCarState, State pedes
 }
 
 void execute() {
-	//printf("-----EXECUTE-----\n");
+	printf("-----EXECUTE-----\n");
 	clock_t before;
 	static unsigned int count = 0;
+	static unsigned int count2 = 0;
 	for (int i = 0; i < NUMBER_OF_TIMESTEPS; i++) {
 		before = clock();
 		count++;
 		//debug
 		if (count >= 150)
 		{
+			count2++;
 			time_t now;
 			time(&now);
 			printf("\n%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, difftime(now,start2));
 			count=0;
+			if (count2 >= 20)
+			{
+				FILE* fout = fopen(fname,"w");
+				fprintf(fout, "---PEDESTRIANS---\nnumber:%d, chance of:", NUMBER_OF_PEDESTRIANS);
+				fprintf(fout, "\tExit= %d, WalkSamePavement: %d, Cross: %d, Stop: %d\n", CHANCE_EXIT, CHANCE_SAME_PAVEMENT, CHANCE_CROSS, CHANCE_STOP); 
+				fprintf(fout, "\n---PLANNING---\nmaxV: %lf, maxDecel: %lf \nyTotal:%lf, time: %lf\n",MAX_V, MAX_DECEL, yTotal, difftime(now,start2));
+				fprintf(fout, "NumCollide with speed:\n");
+				for (int i=0;i<25;++i)
+				{
+					fprintf(fout,"%d to %d\t:\t%u\n",i,i+1,numCollision[i]);
+				}
+				count2=0;
+				fclose(fout);
+			}
 		}
 		
 		for (int j = 0; j < NUMBER_OF_PEDESTRIANS; j++) {
@@ -369,9 +317,10 @@ void execute() {
 		for (int j=0; j< NUMBER_OF_PEDESTRIANS; j++) {
 			if (carHitPedestrian(previousCarState, car.getState(), pedestrians[j].getState()))
 			{	
-				if (car.getV() < 1.5)
+				if (car.getV() < 3.0)
 					numLightCollision++;
 				else numHeavyCollision++;
+				numCollision[(int)(floor(car.getV()))]++;
 			}
 			if (pedestrians[j].getY() < car.getY() + 100)
 			{
@@ -416,7 +365,7 @@ void* control(void* args) {
 
 void* control(void* args) {
 	//debug
-	//printf("---In control---\n");
+	printf("---In control---\n");
 	while (true) {
 		planner.plan(seenPedestrians);
 	}
@@ -424,11 +373,19 @@ void* control(void* args) {
 }
 
 int main() {
+	//printf("Enter output file name:");
+	//scanf("%s",fname);
 	initialize_environment();
+	printf("FINISH INITIALIZE\n");
+	getchar();
 	pthread_t thread;
 	pthread_t gui_thread;
 	time(&start2);
-	pthread_create(&thread, NULL, &control, NULL);
 	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
+	printf("START GUI\n");
+	getchar();
+	pthread_create(&thread, NULL, &control, NULL);
+	printf("START CONTROL\n");
+	getchar();
 	execute();
 }

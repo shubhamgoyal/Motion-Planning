@@ -27,10 +27,10 @@ List what to be finished:
 	b) create 2 lines and the car can continue to the 
 	   second line after the first line and move back
 		to the first line afterward (the other line 
-		always give the road ahead) ---- ALMOST DONE ----
+		always give the road ahead) ---- DONE ----
 
 6) Create smarter pedestrian:
-	*) make the pedestrian go behind car (instead go through it)
+	*) make the pedestrian go behind car (instead go through it) ---DONE---
 	a) have some reaction to the car (don't know exactly how...)
 	b) but must make sure the car still need
 	   to avoid something. Otherwise, the car
@@ -52,3 +52,7 @@ List what to be finished:
 8) Configure the planner:
 	a) Reduce the maximum braking deceleration
 	b) Reduce the number of collision
+
+9) Fix bug:
+	a) Segmentation often occur in the beginning 
+	   when the number of pedestrians is more than 3000. --- DONE ---

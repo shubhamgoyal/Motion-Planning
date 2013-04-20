@@ -2,8 +2,9 @@
 #define POTENTIAL_PLANNER2
 
 #include "Planner.h"
+#include <pthread.h>
 
-#define CHARGE 3.0
+#define CHARGE 2.0
 
 /* This planner will consider the repulsion force from
 	the pedestrian and environment and convert it into control.
@@ -18,12 +19,15 @@
 class PotentialPlanner2 : public Planner {
 	public:
 		//constructor
-		PotentialPlanner2():m_charge(3.0) {};
-		PotentialPlanner2(Car& acar, std::vector<Pedestrian*> apedestrians):Planner(acar, apedestrians),m_charge(3.0),hlength(acar.getLength()/2),hwidth(acar.getWidth()/2){}
+		PotentialPlanner2():m_charge(CHARGE) {};
+		PotentialPlanner2(Car& acar, std::vector<Pedestrian*> &apedestrians):Planner(acar, apedestrians),m_charge(CHARGE),hlength(acar.getLength()/2),hwidth(acar.getWidth()/2){
+			setVector2D(m_force,0.0,0.0);
+		}
 
 		//public functions
 		void plan(std::vector<Pedestrian*> &apedestrians);
 		void drawForce();
+
 
 	protected:
 
@@ -57,11 +61,12 @@ class PotentialPlanner2 : public Planner {
 		dd m_charge;
 		
 		//private functions
-		bool isDangerous(State astate);
-		bool isVeryDangerous(State astate);
-		bool isSemiDangerous(State astate);
+		bool isDangerous(const State &astate);
+		bool isVeryDangerous(const State &astate);
+		bool isSemiDangerous(const State &astate);
 		dd goalForce();
 		Vector2D calcForce(Pedestrian &apedestrian);
+		Vector2D calcForce(int i);
 		void calcTotalForce();
 		Control convertForceToControl(Vector2D f);
 

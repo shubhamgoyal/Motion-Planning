@@ -46,9 +46,21 @@ struct zebra_crossing {
 	double width;
 };
 
-#define NUMBER_OF_PEDESTRIANS 1000
+#define NUMBER_OF_PEDESTRIANS 3000
 #define NUMBER_OF_TIMESTEPS 10000
 #define TIME_STEP_DURATION 5e-3
+
+/* NORMAL CHANCE THAT IS USED:
+#define CHANCE_EXIT 0
+#define CHANCE_SAME_PAVEMENT 35
+#define CHANCE_CROSS 50
+#define CHANCE_STOP 15
+/**/
+
+#define CHANCE_EXIT 0
+#define CHANCE_SAME_PAVEMENT 0
+#define CHANCE_CROSS 100
+#define CHANCE_STOP 0
 
 class Environment
 {

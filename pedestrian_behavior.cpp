@@ -17,10 +17,7 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 		actions.pop_front();
 	}
 	else {*/
-	/*DEBUG*/
-	//printf("Size of actions: %d\n", actions.size());
-		
-	/**/
+	
 	double cx = car->getX();
 	double cy = car->getY();
 	double hlength = car->getLength()/2;
@@ -29,7 +26,7 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 	if (vx > 0.01 && p.y < cy+hlength && p.y > cy-hlength && (fabs(cx-p.x)-hwidth)/vx < 1.0 && (cx-p.x)*next_action.x_velocity > 0)
 	{
 		static int count = 0;
-		printf("-----HELLO: %d-----\n", count++);
+		printf("-----AVOID CAR: %d-----\n", count++);
 		//assert (1 != 1);
 		pedestrian::action new_action = {0.0, -vx, 500};
 		actions.push_front(new_action);
@@ -62,7 +59,11 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 
 void Pedestrian_Behavior::insert_new_long_term_goal(std::deque<pedestrian::action> &actions, State& pedestrian_state, int& action_type) {
 	//printf("In insert goal\n");
-	int goal_type = (getRand() % 100) + 1;
+	int getExit=CHANCE_EXIT;
+	int getSamePavement= getExit+CHANCE_SAME_PAVEMENT;
+	int getCross=getSamePavement+CHANCE_CROSS;
+	int getStop=getCross+CHANCE_STOP;
+	int goal_type = (getRand() % getStop) + 1;
 	/*DEBUG*/
 	//goal_type = 1;
 	//printf("Goal type is %d\n", goal_type);
@@ -86,10 +87,6 @@ void Pedestrian_Behavior::insert_new_long_term_goal(std::deque<pedestrian::actio
 	}
 	*/
 
-	int getExit=0;
-	int getSamePavement= getExit+35;
-	int getCross=getSamePavement+50;
-	int getStop=getCross+15;
 	
 	if (goal_type >0 && goal_type <= getExit)
 	{
@@ -164,7 +161,7 @@ double Pedestrian_Behavior::sample_random(double min_value, double max_value) {
 }
 
 double Pedestrian_Behavior::sample_normal_random(double min_value, double max_value, double mean, double stddev) {
-	std::uniform_real_distribution<double> dist(mean, stddev);
+	std::normal_distribution<double> dist(mean, stddev);
 	std::mt19937 rng;
 	//rng.seed(std::random_device{}()); 
 	rng.seed(getRand());
@@ -233,10 +230,10 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 		if (random_use_zebra_crossing > 3) {
 			if (zebra_crossings_within_range.size() > 1) {
 				//2 zebra crossings within range
-				double min_value = 0;
-				double max_value = 4;
+				double min_value = 0.0;
+				double max_value = 4.0;
 				double value = sample_random(min_value, max_value);
-				if (value <= 2) {
+				if (value <= 2.0) {
 					y_cross = environment.zebra_crossings[zebra_crossings_within_range[0]].y_min + value;
 				}
 				else {
@@ -244,8 +241,8 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 				}
 			}
 			else {
-				double min_value = 0;
-				double max_value = 2;
+				double min_value = 0.0;
+				double max_value = 2.0;
 				double value = sample_random(min_value, max_value);
 				y_cross = environment.zebra_crossings[zebra_crossings_within_range[0]].y_min + value;
 			}
@@ -256,15 +253,16 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 			double max_y = std::max(pedestrian_state.y, sample_goal_location_y);
 			double mean = min_y + fabs(max_y - min_y)/2.0;
 			double stddev = fabs(max_y - min_y)/2.0;
+			mean = (pedestrian_state.y + sample_goal_location_y)/2.0;
 			y_cross = sample_normal_random(Y_MIN, Y_MAX, mean, stddev);
 		}
 	}
 	else {
 		if (random_use_zebra_crossing > 7) {
-			double min_value = 0;
-			double max_value = 4;
+			double min_value = 0.0;
+			double max_value = 4.0;
 			double value = sample_random(min_value, max_value);
-			if (value <= 2) {
+			if (value <= 2.0) {
 				y_cross = environment.zebra_crossings[0].y_min + value;
 			}
 			else {
@@ -277,9 +275,18 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 			double max_y = std::max(pedestrian_state.y, sample_goal_location_y);
 			double mean = min_y + fabs(max_y - min_y)/2.0;
 			double stddev = fabs(max_y - min_y)/2.0;
+			mean = (pedestrian_state.y + sample_goal_location_y)/2.0;
 			y_cross = sample_normal_random(Y_MIN, Y_MAX, mean, stddev);
 		}
 	}
+	/*To disable the zebra cross
+	  Comment to implement the usual
+	  *//*
+	double mean = (pedestrian_state.y + sample_goal_location_y)/2.0;
+	double stddev = fabs(pedestrian_state.y - sample_goal_location_y)/2.0;
+	y_cross = sample_normal_random(Y_MIN,Y_MAX,mean,stddev);
+	/**/
+
 	//------------------------Found the cross over point--------------------------------------
 	double random_velocity = 0.0;
 	while (random_velocity == 0.0) {

@@ -2,6 +2,7 @@
 #define CAR
 #include <deque>
 #include <GL/glut.h>
+#include <cstdio>
 //#define _USE_MATH_DEFINES
 //#include <cmath>
 
@@ -59,12 +60,15 @@ class Car: public Object {
 				pthread_mutex_unlock (&mutex_path);
 			}
 			else {
-				curControl.h1 = 0;
-				curControl.h2 = 0;
+				curControl.h1 = 0.0;
+				curControl.h2 = 0.0;
 			}
 
 			state.v += curControl.h1;
-			state.theta += state.v*tan(curControl.h2)/carLength;
+			if ((state.v > 1e-6) && (curControl.h2 > 1e-8 || curControl.h2 < -1e-8) )
+				state.theta += state.v*tan(curControl.h2)/carLength;
+			else state.theta = state.theta;
+
 			if (state.v < 0) state.v = 0;
 		}
 
@@ -101,10 +105,12 @@ class Car: public Object {
 			glTranslatef(state.x,state.y,0);
 			glRotatef(state.theta*180.0/M_PI,0,0,1);
 			glBegin(GL_QUADS);
-			glVertex2f(-carLength/2,-carWidth/2);
-			glVertex2f(carLength/2,-carWidth/2);
-			glVertex2f(carLength/2,carWidth/2);
-			glVertex2f(-carLength/2,carWidth/2);
+			double hlength = carLength/2-0.2;
+			double hwidth = carWidth/2-0.2;
+			glVertex2f(-hlength,-hwidth);
+			glVertex2f( hlength,-hwidth);
+			glVertex2f( hlength, hwidth);
+			glVertex2f(-hlength, hwidth);
 			glEnd();
 			glPopMatrix();
 		}

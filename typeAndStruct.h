@@ -7,7 +7,7 @@ typedef double dd;
 //DEFINITION
 #define _USE_MATH_DEFINES
 #include<cmath>
-#define RANDOM_SEED 12345
+#define RANDOM_SEED 1234
 
 //for car
 #define CARLENGTH 3.0
@@ -16,6 +16,10 @@ typedef double dd;
 
 //for pedestrian
 #define PEDESTRIAN_SIZE 5
+
+//for planner
+#define MAX_V 25.0
+#define MAX_DECEL 0.9e-1
 
 //STRUCT
 struct State {
