@@ -105,8 +105,8 @@ class Car: public Object {
 			glTranslatef(state.x,state.y,0);
 			glRotatef(state.theta*180.0/M_PI,0,0,1);
 			glBegin(GL_QUADS);
-			double hlength = carLength/2-0.2;
-			double hwidth = carWidth/2-0.2;
+			double hlength = carLength/2-0.1;
+			double hwidth = carWidth/2-0.1;
 			glVertex2f(-hlength,-hwidth);
 			glVertex2f( hlength,-hwidth);
 			glVertex2f( hlength, hwidth);

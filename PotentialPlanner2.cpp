@@ -15,7 +15,7 @@ bool PotentialPlanner2::isDangerous(const State &astate)
 	double dist = sqrt(dx*dx + dy*dy);
 	double safetyBuffer = 1.6;
 	double dangerZone = (car->getV()*2)+2.5;
-	if ( (dy > hlength && dy < dangerZone) ) {
+	if ( (dy > hlength - BUFFER_DIST*3 && dy-hlength < dangerZone) ) {
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
 		//reach the pedestrian y position
@@ -29,7 +29,7 @@ bool PotentialPlanner2::isDangerous(const State &astate)
 			if (dx + tt*v*cos(theta)*safetyBuffer < hwidth+BUFFER_DIST)
 				return true;
 		}
-		if (fabs(dx) < hwidth+BUFFER_DIST && dy < DANGEROUS_Y_DIST + hlength && dy > 0) return true;
+		if (fabs(dx) < hwidth+BUFFER_DIST && dy < DANGEROUS_Y_DIST + hlength ) return true;
 
 	}
 	if (dy > -hlength && dist < 2.0) return true;
@@ -64,13 +64,16 @@ bool PotentialPlanner2::isVeryDangerous(const State &astate)
 	//Already pass through the car
 	if (dxx*pv > 0 && (dxx > hwidth+BUFFER_DIST  || dxx < -hwidth-BUFFER_DIST) ) return false;
 
-	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy-hlength-BUFFER_DIST < v/2)
-	{	return true;}
-	if (dyy > hlength && fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy -hlength -BUFFER_DIST < 1.0)
-	{	return true;}
-	if (dyy > hlength && dist <2.2) 
+	if (dyy > hlength - BUFFER_DIST) 
 	{
-		return true;
+		if ( fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy-hlength-BUFFER_DIST < v/2)
+		{	return true;}
+		if ( fabs(dxx) < hwidth + BUFFER_DIST*4 + fabs(pv)*0.2 && dyy -hlength -BUFFER_DIST < 1.0)
+		{	return true;}
+		if ( dist <2.2) 
+		{
+			return true;
+		}
 	}
 	return false;
 
@@ -132,11 +135,10 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (danger && !veryDangerous) 
 	{
 		assert (dy <= hlength+BUFFER_DIST);
-		if (fabs(atan2(dx,dy)) < M_PI/5.0 );
+		if (fabs(atan2(-dx,-dy)) < M_PI/6.0 );
 			resForce.x = -6.0*cos(astate.theta)*abs(resForce.x)*x_factor*x_factor;
 
 		bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
-		assert( tempAssert || (printf("----xforce: %lf, vxPed: %lf\n-----",resForce.x,apedestrian.getXDot() ),tempAssert));
 		resForce.y *= 1.5e4*y_factor*y_factor*v_factor*v_factor*v_factor;
 		if (dist < 12.0) resForce.y *= x_factor*x_factor/4;
 	}

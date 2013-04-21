@@ -1,10 +1,9 @@
 ---PEDESTRIANS---
-number:2000, chance of:	Exit= 0, WalkSamePavement: 0, Cross: 100, Stop: 0
-NOT USING ZEBRA CROSS
+number:200, chance of:	Exit= 0, WalkSamePavement: 0, Cross: 100, Stop: 0
 
 ---PLANNING---
-maxV: 25.000000, maxDecel: 0.070000 
-yTotal:35947.228760, time: 6628.000000
+maxV: 25.000000, maxDecel: 0.060000 
+yTotal:169021.380606, time: 10271.000000
 NumCollide with speed:
 0 to 1	:	0
 1 to 2	:	0
@@ -13,10 +12,10 @@ NumCollide with speed:
 4 to 5	:	0
 5 to 6	:	0
 6 to 7	:	0
-7 to 8	:	0
+7 to 8	:	2
 8 to 9	:	0
-9 to 10	:	0
-10 to 11	:	0
+9 to 10	:	2
+10 to 11	:	1
 11 to 12	:	0
 12 to 13	:	0
 13 to 14	:	0

@@ -23,7 +23,7 @@ List what to be finished:
 	c) If possible, allow batch measuring --- HOW??? ---
 
 5) Create better GUI: 
-	a) Apply some picture for the car
+	a) Apply some picture for the car  ---- MAYBE NO NEED ---
 	b) create 2 lines and the car can continue to the 
 	   second line after the first line and move back
 		to the first line afterward (the other line 
@@ -32,6 +32,9 @@ List what to be finished:
 6) Create smarter pedestrian:
 	*) make the pedestrian go behind car (instead go through it) ---DONE---
 	a) have some reaction to the car (don't know exactly how...)
+		*) Proposal: The car can horn and after that the pedestrian who are crossing in front of
+			of the car should go more quickly while the pedestrian before the car should stops.
+			We may also apply some rules, so that only 90% of pedestrians will obey this.
 	b) but must make sure the car still need
 	   to avoid something. Otherwise, the car
 		will only go straight with no pedestrian

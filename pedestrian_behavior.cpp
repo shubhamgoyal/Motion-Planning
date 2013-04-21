@@ -216,6 +216,9 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 		sample_goal_location_x = sample_random(PAVEMENT_LEFT_X_MIN, PAVEMENT_LEFT_X_MAX);
 		sample_goal_location_y = sample_random(Y_MIN, Y_MAX);
 	}
+
+	if (USE_ZEBRA_CROSS)
+	{
 	std::vector<int> zebra_crossings_within_range;
 	for (int i = 0; i < NUM_ZEBRA_CROSSING; i++) {
 		if ((((sample_goal_location_y - environment.zebra_crossings[i].y_min) <= 0) && ((pedestrian_state.y - environment.zebra_crossings[i].y_min) >= 0)) ||
@@ -279,12 +282,16 @@ void Pedestrian_Behavior::insert_long_term_walk_opposite_pavement(std::deque<ped
 			y_cross = sample_normal_random(Y_MIN, Y_MAX, mean, stddev);
 		}
 	}
+	}
 	/*To disable the zebra cross
 	  Comment to implement the usual
-	  *//*
-	double mean = (pedestrian_state.y + sample_goal_location_y)/2.0;
-	double stddev = fabs(pedestrian_state.y - sample_goal_location_y)/2.0;
-	y_cross = sample_normal_random(Y_MIN,Y_MAX,mean,stddev);
+	  */
+	else if (USE_ZEBRA_CROSS == 0)
+	{
+		double mean = (pedestrian_state.y + sample_goal_location_y)/2.0;
+		double stddev = fabs(pedestrian_state.y - sample_goal_location_y)/2.0;
+		y_cross = sample_normal_random(Y_MIN,Y_MAX,mean,stddev);
+	}
 	/**/
 
 	//------------------------Found the cross over point--------------------------------------

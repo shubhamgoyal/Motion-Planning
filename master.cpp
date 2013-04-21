@@ -121,7 +121,7 @@ static void drawEnv(double scaleX, double scaleY, double dx, double dy)
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
 
-	//planner.drawForce();
+	planner.drawForce();
 	glPopMatrix();
 
 }
@@ -281,8 +281,8 @@ void initialize_environment() {
 
 bool isPointInsideCar(State carState, dd x, dd y)
 {
-	dd hwidth = CARWIDTH/2.0 + 0.05;
-	dd hlength= CARLENGTH/2.0 + 0.05;
+	dd hwidth = CARWIDTH/2.0 - 0.05;
+	dd hlength= CARLENGTH/2.0 - 0.05;
 	dd cx = carState.x;
 	dd cy = carState.y;
 	dd theta = carState.theta;
@@ -339,6 +339,8 @@ void execute() {
 				FILE* fout = fopen(fname,"w");
 				fprintf(fout, "---PEDESTRIANS---\nnumber:%d, chance of:", NUMBER_OF_PEDESTRIANS);
 				fprintf(fout, "\tExit= %d, WalkSamePavement: %d, Cross: %d, Stop: %d\n", CHANCE_EXIT, CHANCE_SAME_PAVEMENT, CHANCE_CROSS, CHANCE_STOP); 
+				if (USE_ZEBRA_CROSS) fprintf(fout, "USING ZEBRA CROSS\n");
+				else fprintf(fout, "NOT USING ZEBRA CROSS\n");
 				fprintf(fout, "\n---PLANNING---\nmaxV: %lf, maxDecel: %lf \nyTotal:%lf, time: %lf\n",MAX_V, MAX_DECEL, yTotal, difftime(now,start2));
 				fprintf(fout, "NumCollide with speed:\n");
 				for (int i=0;i<25;++i)

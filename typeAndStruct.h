@@ -19,7 +19,7 @@ typedef double dd;
 
 //for planner
 #define MAX_V 25.0
-#define MAX_DECEL 0.9e-1
+#define MAX_DECEL 0.7e-1
 
 //STRUCT
 struct State {
