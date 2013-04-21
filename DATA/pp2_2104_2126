@@ -4,8 +4,8 @@ USING ZEBRA CROSS
 
 ---PLANNING---
 maxV: 25.000000, maxDecel: 0.070000 
-yTotal:120.671101, time: 43.000000
-HORN_ENABLEDi
+yTotal:20450.503691, time: 3344.000000
+HORN_ENABLED
 NumCollide with speed:
 0 to 1	:	0
 1 to 2	:	0

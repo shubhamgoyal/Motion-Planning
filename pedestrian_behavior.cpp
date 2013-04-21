@@ -17,26 +17,73 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 		actions.pop_front();
 	}
 	else {*/
-	
 	double cx = car->getX();
 	double cy = car->getY();
 	double hlength = car->getLength()/2;
 	double hwidth = car->getWidth()/2;
-	double vx = fabs(next_action.x_velocity);
-	if (vx > 0.01 && p.y < cy+hlength && p.y > cy-hlength && (fabs(cx-p.x)-hwidth)/vx < 1.0 && (cx-p.x)*next_action.x_velocity > 0)
+	double vx_abs = fabs(next_action.x_velocity);
+	double vx = next_action.x_velocity;
+	/* PEDESTRIAN AVOID GOES THROUGH THE CAR */
+	if (vx_abs > 0.01 && p.y < cy+hlength && p.y > cy-hlength && (fabs(cx-p.x)-hwidth)/vx_abs < 1.0 && (cx-p.x)*next_action.x_velocity > 0)
 	{
 		static int count = 0;
 		printf("-----AVOID CAR: %d-----\n", count++);
 		//assert (1 != 1);
-		pedestrian::action new_action = {0.0, -vx, 500};
+		pedestrian::action new_action = {0.0, -vx_abs, 500};
 		actions.push_front(new_action);
 		action_type = action_type%10 + 10;
 		next_action = actions.front();
 	}
-	else if (vx > 0.01)
+	else if (vx_abs > 0.01)
 	{
 		action_type %= 10;
 	}
+	/**/
+
+	/* PEDESTRIAN REACT TO HORN */
+	if (HORN_ENABLED)
+ 	{
+		unsigned int is_react_to_horn = getRand()%100+1;
+		if (is_react_to_horn <= 90 && car->getHorn() && !reacted_to_horn && p.y-cy >0 && p.y-cy <8.0+hlength)
+		{
+			if (vx_abs > 1e-2)
+			{
+				if ((p.x-cx > hwidth + HORN_BUFFER || p.x-cx < -hwidth-HORN_BUFFER) && (p.x - cx)*vx < -1e-5 )
+				{
+					pedestrian::action new_action = {0.0,0.0,HORN_HALT};
+					actions.push_front(new_action);
+					next_action = actions.front();
+					reacted_to_horn = true;
+					action_type = action_type%100 + 100;
+				}
+			}
+			else if ( (p.x-cx > hwidth + HORN_BUFFER/2.0 || p.x-cx < -hwidth-HORN_BUFFER/2.0) )
+			{
+					pedestrian::action new_action = {0.0,0.0,HORN_HALT};
+					actions.push_front(new_action);
+					next_action = actions.front();
+					reacted_to_horn = true;
+					action_type = action_type%100 + 100;
+			}
+		}
+		else if (!reacted_to_horn) action_type %= 100;
+	
+		if (reacted_to_horn && ( p.y-cy < -10.0 || p.y-cy > 100.0) )
+		{
+			reacted_to_horn = false;
+			actions.pop_front();
+			next_action = actions.front();
+			action_type %= 100;
+		}
+		else if (reacted_to_horn && actions.front().time_steps_left == 1 && p.y-cy <8.0 && p.y-cy >-8.0 && (p.x -cx > hwidth+HORN_BUFFER || p.x - cx < -hwidth-HORN_BUFFER))
+		{
+					pedestrian::action new_action = {0.0,0.0,HORN_HALT};
+					actions.push_front(new_action);
+					next_action = actions.front();
+					action_type = action_type%100 + 100;
+		}
+	}
+	/**/
 
 	pedestrian_state.x = pedestrian_state.x + next_action.x_velocity * time_step;
 	pedestrian_state.y = pedestrian_state.y + next_action.y_velocity * time_step;
@@ -52,7 +99,10 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 	if (next_action.time_steps_left >= 1) actions.front().time_steps_left--;
 	else 
 	{
-		if (!actions.empty()) actions.pop_front();
+		if (!actions.empty()) {
+			actions.pop_front();
+			reacted_to_horn = false;
+		}
 		else action_type=0;
 	}
 }

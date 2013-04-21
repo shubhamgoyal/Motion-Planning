@@ -34,7 +34,7 @@ from left to right while the y co-ordinate increases from the bottom to top.
 #define ZEBRA1_Y_MAX 126
 #define ZEBRA2_Y_MIN 374
 #define ZEBRA2_Y_MAX 376
-#define USE_ZEBRA_CROSS 0
+#define USE_ZEBRA_CROSS 1 
 
 
 #define NUM_ZEBRA_CROSSING 2

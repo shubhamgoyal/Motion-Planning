@@ -86,10 +86,11 @@ protected:
 public:
 	Environment environment;
 	
-	Pedestrian_Behavior(){};
+	Pedestrian_Behavior():reacted_to_horn(false){};
 
 	Pedestrian_Behavior(Car &acar)
 	{
+		reacted_to_horn = false;
 		car = &acar;
 		isExit = 0;
 		environment = Environment();
@@ -110,6 +111,7 @@ private:
 	}
 
 	Car *car;
+	bool reacted_to_horn;
 
 
 };

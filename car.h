@@ -9,43 +9,62 @@
 #include "environment.h"
 #include "Object.h"
 #include <pthread.h>
+#include <iostream>
 //#define CARLENGTH 3.0
 //#define CARWIDTH 1.6
 
 
 class Car: public Object {
 	public:
-		Car():Object(){
+		Car():Object(), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
 		}
 
-		Car(dd l, dd w):Object(){
+		Car(dd l, dd w):Object(),timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
-		Car(State astate, dd l, dd w):Object(astate){
+		Car(State astate, dd l, dd w):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
-		Car(State astate):Object(astate){
+		Car(State astate):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
 		};
 
-		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta){
+		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
 		};
 
 		void update_state(dd time_step){
+			if (HORN_ENABLED)
+			{
+				if (state.v < 1e-5 && state.v > -1e-5)
+				{
+					timeStop++;
+					if (timeStop > WAIT_TO_HORN)
+					{
+						std::cout << '\a' << '\a';
+						isHorn = true;
+						timeStop -= HORN_INTERVAL;
+					}
+				}
+				else
+				{
+					timeStop = 0;
+					isHorn = false;
+				}
+			}
 			state.x += getXDot()*time_step;
 			state.y += getYDot()*time_step;
 			if (state.y >= Y_MAX) state.y -= Y_MAX;
@@ -90,6 +109,16 @@ class Car: public Object {
 			return &path;
 		}
 
+		bool getHorn()
+		{
+			return isHorn;
+		}
+
+		bool setHornOff()
+		{
+			isHorn = false;
+		}
+
 		void setPath(std::deque <Control> &apath)
 		{
 			pthread_mutex_lock (&mutex_path);
@@ -121,6 +150,8 @@ class Car: public Object {
 	private:
 		dd carLength;
 		dd carWidth;
+		unsigned int timeStop;
+		bool isHorn;
 		std::deque <Control> path;
 
 };

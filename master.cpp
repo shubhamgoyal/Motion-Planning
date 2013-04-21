@@ -342,6 +342,7 @@ void execute() {
 				if (USE_ZEBRA_CROSS) fprintf(fout, "USING ZEBRA CROSS\n");
 				else fprintf(fout, "NOT USING ZEBRA CROSS\n");
 				fprintf(fout, "\n---PLANNING---\nmaxV: %lf, maxDecel: %lf \nyTotal:%lf, time: %lf\n",MAX_V, MAX_DECEL, yTotal, difftime(now,start2));
+				if (HORN_ENABLED) fprintf(fout, "HORN_ENABLEDi\n");
 				fprintf(fout, "NumCollide with speed:\n");
 				for (int i=0;i<25;++i)
 				{
