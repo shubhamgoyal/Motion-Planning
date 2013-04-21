@@ -6,6 +6,8 @@
 #include <cstring>
 #include <random>
 #include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
 
 /*Functions for openGL */
@@ -207,6 +209,16 @@ static void update(int value)
    glutTimerFunc(1,update,0);
 }
 
+//Press 1 in keyboard to exit
+void get_keyboard(unsigned char key, int x, int y)
+{
+	if (key == '1')
+	{
+		car.SDL_cleanup();
+		assert(1!=1); //to exit
+	}
+}
+
 void* gui(void* args) {
 	/* debug */
 	printf("### in GUI ###\n");
@@ -221,6 +233,7 @@ void* gui(void* args) {
 	glutCreateWindow(stTemp);
    Init();
    glutReshapeFunc(Reshape);
+	glutKeyboardFunc(get_keyboard);
    glutDisplayFunc(Draw);
    glutTimerFunc(10,update,0);
    glutMainLoop();
@@ -432,9 +445,9 @@ int main() {
 	time(&start2);
 	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
 	printf("START GUI\n");
-	getchar();
+	//getchar();
 	pthread_create(&thread, NULL, &control, NULL);
 	printf("START CONTROL\n");
-	//getchar();
+	
 	execute();
 }

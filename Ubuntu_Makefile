@@ -1,9 +1,9 @@
 CFLAGS=-std=c++0x -g -lpthread
-GLFLAGS=-lglut -lGLU -lGL
+GLFLAGS=-lglut -lGLU -lGL -lSDL -lSDL_mixer
 #PLANNER=SimplePlanner
 PLANNER=PotentialPlanner2
 
-all: master.exe master.o $(PLANNER).o pedestrian_behavior.o environment.o pedestrian.o car.o 
+all: master.exe master.o $(PLANNER).o pedestrian_behavior.o environment.o pedestrian.o car.o environment.o
 
 master.exe: master.o car.o pedestrian.o $(PLANNER).o pedestrian_behavior.o environment.o
 	g++ master.o car.o pedestrian.o $(PLANNER).o pedestrian_behavior.o environment.o -o master.exe $(CFLAGS) $(GLFLAGS)

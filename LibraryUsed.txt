@@ -1,0 +1,24 @@
+We use OpenGL(for image) and SDL(for sound) library
+
+To use openGl:
+To install in ubuntu:
+sudo apt-get install build-essential freeglut3-dev
+
+To add to program: 
+#include <GL/glut.h>
+
+To compile:
+add the following flags after g++ or gcc: -lglut -lGLU -lGL
+
+
+To use SDL:
+
+To install SDL (full) in ubuntu:
+sudo apt-get install libsdl1.2-dev libsdl-mixer1.2-dev 
+
+To add to program:
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h> 
+
+To compile:
+add the following flags after g++ or gcc: -lSDL -lSDL_mixer

@@ -13,8 +13,8 @@ typedef double dd;
 #define CARLENGTH 3.0
 #define CARWIDTH 1.6
 #define Y_VISIBLE 100
-#define WAIT_TO_HORN 1000
-#define HORN_INTERVAL 100
+#define WAIT_TO_HORN 3000
+#define HORN_INTERVAL 500
 #define HORN_HALT 5000
 #define HORN_BUFFER 1.0
 #define HORN_ENABLED 1

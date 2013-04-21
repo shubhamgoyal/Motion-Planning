@@ -112,6 +112,13 @@ class Car: public Object {
 			return true;
 		}
 
+		bool SDL_cleanup()
+		{
+			Mix_FreeChunk( horn_sound );
+			Mix_CloseAudio();
+			SDL_Quit();
+		}
+
 		void control(dd h1, dd h2){
 			state.v += h1;
 			state.theta += state.v*tan(h2)/carLength/10;
