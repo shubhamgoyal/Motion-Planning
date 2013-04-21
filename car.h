@@ -2,6 +2,8 @@
 #define CAR
 #include <deque>
 #include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #include <cstdio>
 //#define _USE_MATH_DEFINES
 //#include <cmath>
@@ -20,30 +22,35 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
+			SDL_init_load();
 		}
 
 		Car(dd l, dd w):Object(),timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			SDL_init_load();
 		};
 
 		Car(State astate, dd l, dd w):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			SDL_init_load();
 		};
 
 		Car(State astate):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
+			SDL_init_load();
 		};
 
 		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			SDL_init_load();
 		};
 
 		void update_state(dd time_step){
@@ -54,8 +61,12 @@ class Car: public Object {
 					timeStop++;
 					if (timeStop > WAIT_TO_HORN)
 					{
-						std::cout << '\a' << '\a';
 						isHorn = true;
+						if (Mix_PlayChannel(-1, horn_sound, 0) ==-1) 
+						{
+							printf("Failed to play car horn sound\n");
+							exit(0);
+						}
 						timeStop -= HORN_INTERVAL;
 					}
 				}
@@ -89,6 +100,16 @@ class Car: public Object {
 			else state.theta = state.theta;
 
 			if (state.v < 0) state.v = 0;
+		}
+
+		bool SDL_init_load()
+		{
+			if (SDL_Init( SDL_INIT_EVERYTHING ) == -1) return false;
+			if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) return false;
+			horn_sound = Mix_LoadWAV("car_horn.wav");
+			if (horn_sound == NULL) return false;
+			
+			return true;
 		}
 
 		void control(dd h1, dd h2){
@@ -153,6 +174,7 @@ class Car: public Object {
 		unsigned int timeStop;
 		bool isHorn;
 		std::deque <Control> path;
+		Mix_Chunk *horn_sound;
 
 };
 
