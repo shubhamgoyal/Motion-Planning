@@ -8,8 +8,9 @@ double min(double a, double b)
 
 bool SimplePlanner::isDangerous(State astate)
 {
+	double dangerZone = (car->getV()*3.0)+4.5;
    
-	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+15) {
+	if ( astate.y > car->getY() + car->getLength()/2 && astate.y < car->getY()+dangerZone) {
       dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
       //tt is the rough estimate on time needed for the car to 
       //reach the pedestrian y position
