@@ -8,12 +8,14 @@ typedef double dd;
 #define _USE_MATH_DEFINES
 #include<cmath>
 #define RANDOM_SEED 12345
+#define GUI_ENABLED 0
+#define SOUND_ENABLED 0
 
 //for car
 #define CARLENGTH 3.0
 #define CARWIDTH 1.6
 #define Y_VISIBLE 100
-#define WAIT_TO_HORN 3000
+#define WAIT_TO_HORN 1500
 #define HORN_INTERVAL 500
 #define HORN_HALT 5000
 #define HORN_BUFFER 1.0
@@ -24,7 +26,7 @@ typedef double dd;
 
 //for planner
 #define MAX_V 25.0
-#define MAX_DECEL 0.7e-1
+#define MAX_DECEL 0.5e-1
 
 //STRUCT
 struct State {

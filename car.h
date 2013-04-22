@@ -22,35 +22,35 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
-			SDL_init_load();
+			if (SOUND_ENABLED) SDL_init_load();
 		}
 
 		Car(dd l, dd w):Object(),timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
-			SDL_init_load();
+			if (SOUND_ENABLED) SDL_init_load();
 		};
 
 		Car(State astate, dd l, dd w):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
-			SDL_init_load();
+			if (SOUND_ENABLED) SDL_init_load();
 		};
 
 		Car(State astate):Object(astate), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
-			SDL_init_load();
+			if (SOUND_ENABLED) SDL_init_load();
 		};
 
 		Car(dd ax, dd ay, dd av, dd atheta, dd l, dd w):Object(ax,ay,av,atheta), timeStop(0), isHorn(false){
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
-			SDL_init_load();
+			if (SOUND_ENABLED) SDL_init_load();
 		};
 
 		void update_state(dd time_step){
@@ -62,7 +62,7 @@ class Car: public Object {
 					if (timeStop > WAIT_TO_HORN)
 					{
 						isHorn = true;
-						if (Mix_PlayChannel(-1, horn_sound, 0) ==-1) 
+						if (SOUND_ENABLED && Mix_PlayChannel(-1, horn_sound, 0) ==-1) 
 						{
 							printf("Failed to play car horn sound\n");
 							exit(0);
@@ -157,7 +157,7 @@ class Car: public Object {
 
 		void draw()
 		{
-			glColor3f(1.0,1.0,0.0);
+			glColor3f(0.0,0.75,1.0);
 			glPushMatrix();
 			glTranslatef(state.x,state.y,0);
 			glRotatef(state.theta*180.0/M_PI,0,0,1);

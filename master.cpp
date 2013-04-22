@@ -184,9 +184,6 @@ static void Draw(void)
 	double chHeight= 200.0;
 	double initY= -300.0;
 	double initX= -9300.0; 
-	char test[100]="012345678901 abcdefghijklmnopqrstuvwxyza ABCDEFGHIJKLMNOPQRSTUVWXYZA";
-	//drawText(initX,initY,20.0,40.0,2.0, test);
-	//drawText(initX,initY-chHeight,20.0,40.0,2.0, test);
 	char strTemp[1000]= "Overview:";
 	drawText(initX,initY+1000,20.0,40.0,2.0,strTemp);
 	sprintf(strTemp,"Car status:");
@@ -347,15 +344,15 @@ void execute() {
 			curTime = difftime(now, start2);
 			//printf("\n%d, car: x=%lf, yTot=%lf, V= %lf, Theta: %lf\n NumCollide: light=%u; heavy=%u , time: %lf\n",i,car.getX(), yTotal, car.getV(), (car.getTheta()-M_PI/2)*180.0/M_PI, numLightCollision, numHeavyCollision, curTime);
 			count=0;
-			if (count2 >= 20)
+			if (count2 >= 50)
 			{
 				FILE* fout = fopen(fname,"w");
 				fprintf(fout, "---PEDESTRIANS---\nnumber:%d, chance of:", NUMBER_OF_PEDESTRIANS);
 				fprintf(fout, "\tExit= %d, WalkSamePavement: %d, Cross: %d, Stop: %d\n", CHANCE_EXIT, CHANCE_SAME_PAVEMENT, CHANCE_CROSS, CHANCE_STOP); 
 				if (USE_ZEBRA_CROSS) fprintf(fout, "USING ZEBRA CROSS\n");
 				else fprintf(fout, "NOT USING ZEBRA CROSS\n");
-				fprintf(fout, "\n---PLANNING---\nmaxV: %lf, maxDecel: %lf \nyTotal:%lf, time: %lf\n",MAX_V, MAX_DECEL, yTotal, difftime(now,start2));
-				if (HORN_ENABLED) fprintf(fout, "HORN_ENABLEDi\n");
+				fprintf(fout, "\n---PLANNING---\nmaxV: %lf, maxDecel: %lf \nyTotal:%lf, time: %lf\n",MAX_V, MAX_DECEL, yTotal, curTime);
+				if (HORN_ENABLED) fprintf(fout, "HORN_ENABLED\n");
 				fprintf(fout, "NumCollide with speed:\n");
 				for (int i=0;i<25;++i)
 				{
@@ -363,6 +360,7 @@ void execute() {
 				}
 				count2=0;
 				fclose(fout);
+				if (curTime > 1e4) assert( (printf("10000s of DATA TAKEN\n"), 0));
 			}
 		}
 		
@@ -435,16 +433,28 @@ void* control(void* args) {
 }
 
 int main() {
-	//printf("Enter output file name:");
-	//scanf("%s",fname);
+	//Generate the file output name
+	if (USE_ZEBRA_CROSS) sprintf(fname, "%s/WithZebra",fname);
+	else sprintf(fname, "%s/WithoutZebra",fname);
+	if (HORN_ENABLED) sprintf(fname,"%s/Horn",fname);
+	else sprintf(fname, "%s/NoHorn",fname);
+	sprintf(fname,"%s/pp2_%d_%d_%.2lf",fname,NUMBER_OF_PEDESTRIANS,CHANCE_CROSS, MAX_DECEL);
+	if (HORN_ENABLED) sprintf(fname,"%s_%d.txt",fname,WAIT_TO_HORN);
+	else sprintf(fname,"%s.txt",fname);
+
+
 	initialize_environment();
 	printf("FINISH INITIALIZE\n");
 	//getchar();
-	pthread_t thread;
 	pthread_t gui_thread;
+	pthread_t thread;
 	time(&start2);
-	pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
-	printf("START GUI\n");
+
+	if (GUI_ENABLED)
+	{
+		pthread_create(&gui_thread, NULL, &gui, NULL /*(void*)something*/);
+		printf("START GUI\n");
+	}
 	//getchar();
 	pthread_create(&thread, NULL, &control, NULL);
 	printf("START CONTROL\n");
