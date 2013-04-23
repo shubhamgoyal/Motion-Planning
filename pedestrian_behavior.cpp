@@ -93,7 +93,12 @@ void Pedestrian_Behavior::update_state (std::deque<pedestrian::action> &actions,
 	else if (pedestrian_state.y < Y_MIN) pedestrian_state.y += (Y_MAX-Y_MIN);
 	/******/
 	pedestrian_state.v = sqrt((next_action.x_velocity)*(next_action.x_velocity) +(next_action.y_velocity) *(next_action.y_velocity));
-	pedestrian_state.theta = atan2(next_action.y_velocity, next_action.x_velocity);
+	//pedestrian_state.theta = atan2(next_action.y_velocity, next_action.x_velocity);
+	if (next_action.x_velocity > 1e-3) pedestrian_state.theta = 0.0;
+	else if (next_action.x_velocity < -1e-3) pedestrian_state.theta = M_PI;
+	else if (next_action.y_velocity > 1e-3) pedestrian_state.theta = M_PI/2.0;
+	else if (next_action.y_velocity < -1e-3) pedestrian_state.theta = -M_PI/2.0;
+
 
 	assert(!actions.empty());
 	if (next_action.time_steps_left >= 1) actions.front().time_steps_left--;

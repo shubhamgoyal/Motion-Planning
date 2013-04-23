@@ -14,7 +14,7 @@ bool PotentialPlanner2::isDangerous(const State &astate)
 	double dx = astate.x - car->getX();
 	double dist = sqrt(dx*dx + dy*dy);
 	double safetyBuffer = 1.6;
-	double dangerZone = (car->getV()*2)+2.5;
+	double dangerZone = (car->getV()*2)+2.0;
 	if ( (dy > hlength - BUFFER_DIST*3 && dy-hlength < dangerZone) ) {
 		dd x = astate.x, y = astate.y, v = astate.v, theta= astate.theta;
 		//tt is the rough estimate on time needed for the car to 
@@ -100,7 +100,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	if (dy > Y_MAX -Y_VISIBLE) dy -= (Y_MAX - Y_MIN);
 	dd dist = sqrt(dx*dx + dy*dy);
 	dd y_factor = DANGEROUS_Y_DIST/dist;
-	dd x_factor = DANGEROUS_X_DIST/(abs(dx)+0.001);
+	dd x_factor = DANGEROUS_X_DIST/(abs(dx)+0.01);
 	dd v_factor = car->getV()/DANGEROUS_VELOCITY;
 	
 	//Find how dangerous is the pedestrian situation
@@ -128,19 +128,21 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	//Calculating the general force (not dangerous)
 	dd forceVal = m_charge*car->getV()/(dist*dist);
 	if (dy > -car->getLength()/2) forceVal=0.0;
-	resForce.x = x_factor*forceVal*dx/dist;
+	resForce.x = forceVal*dx/dist;
 	resForce.y = (forceVal*dy/dist)*v_factor*v_factor;
 
 	//Adjusting the force to the dangerous level
 	if (danger && !veryDangerous) 
 	{
 		assert (dy <= hlength+BUFFER_DIST);
-		if (fabs(atan2(-dx,-dy)) < M_PI/6.0 );
-			resForce.x = -6.0*cos(astate.theta)*abs(resForce.x)*x_factor*x_factor;
+		if (fabs(atan2(-dx,-dy)) < M_PI/7.0 )
+			resForce.x = -6.0*cos(astate.theta)*fabs(resForce.x*x_factor*x_factor);
+		else
+			resForce.x *= 6.0;
 
-		bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
-		resForce.y *= 1.5e4*y_factor*y_factor*v_factor*v_factor*v_factor;
-		if (dist < 12.0) resForce.y *= x_factor*x_factor/4;
+		//bool tempAssert = (resForce.x*apedestrian.getXDot() <= 0.001);
+		resForce.y *= 1.5e3*y_factor*y_factor*v_factor*v_factor*v_factor;
+		if (dist < 8.0) resForce.y *= x_factor*x_factor/4;
 	}
 	else if (veryDangerous)
 	{
@@ -187,7 +189,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 {
 	//To normalize from force to control
 	dd norm1 = 1e-3;
-	dd norm2 = 3e-4;
+	dd norm2 = 1e-4;
 
 	//Some constraint on the movement
 	dd maxAccel = 1e-2;
@@ -219,8 +221,8 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 	else if (c.h1 < minAccel) c.h1 = minAccel;
 
 	if ( fabs(car->getV()) < 1e-5 && c.h1 > 1e8) c.h2 = 0.0;
-	else if (car->getTheta() - M_PI/2.0 >  maxTheta && c.h2 > -1e-5) c.h2 = -1e-3;
-	else if (car->getTheta() - M_PI/2.0 < minTheta && c.h2 < 1e-5) c.h2 = 1e-3;
+	else if (car->getTheta() - M_PI/2.0 >  maxTheta && c.h2 > -1e-7) c.h2 = -3e-4;
+	else if (car->getTheta() - M_PI/2.0 < minTheta && c.h2 < 1e-7) c.h2 = 3e-4;
 	else if (c.h2 > maxRotate) c.h2 = maxRotate;
 	else if (c.h2 < -maxRotate) c.h2 = -maxRotate;
 	
