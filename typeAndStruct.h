@@ -19,7 +19,7 @@ typedef double dd;
 #define HORN_INTERVAL 500
 #define HORN_HALT 5000
 #define HORN_BUFFER 1.0
-#define HORN_ENABLED 0
+#define HORN_ENABLED 1
 
 //for pedestrian
 #define PEDESTRIAN_SIZE 5
