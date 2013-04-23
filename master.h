@@ -22,6 +22,7 @@ PotentialPlanner2 planner;
 /*For testing */
 State previousCarState;
 char fname[500]="./DATA/";
+char fname2[500]="./DATA/";
 unsigned int numLightCollision = 0;
 unsigned int numHeavyCollision = 0;
 unsigned int numCollision[100] = {0};

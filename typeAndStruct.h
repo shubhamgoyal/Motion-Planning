@@ -8,7 +8,7 @@ typedef double dd;
 #define _USE_MATH_DEFINES
 #include<cmath>
 #define RANDOM_SEED 12345
-#define GUI_ENABLED 1
+#define GUI_ENABLED 0
 #define SOUND_ENABLED 0
 
 //for car
@@ -19,7 +19,7 @@ typedef double dd;
 #define HORN_INTERVAL 500
 #define HORN_HALT 5000
 #define HORN_BUFFER 1.0
-#define HORN_ENABLED 1
+#define HORN_ENABLED 0
 
 //for pedestrian
 #define PEDESTRIAN_SIZE 5
