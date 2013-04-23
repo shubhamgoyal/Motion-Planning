@@ -123,7 +123,7 @@ static void drawEnv(double scaleX, double scaleY, double dx, double dy)
    for (int i=0;i<pedestrians.size();++i)
       pedestrians[i].draw();
 
-	planner.drawForce();
+	//planner.drawForce();
 	glPopMatrix();
 
 }
@@ -170,12 +170,16 @@ static void Draw(void)
 	if (!(y > curShift1+1.5*shiftLength) && (y > curShift1 + shiftLength || y < curShift1-shiftLength))
 	{
 		curShift1 += 2*shiftLength;
-		if (curShift1 > Y_MAX-1) curShift1 -= Y_MAX; 
+		if (curShift1 > Y_MAX-1.0 && curShift1 < Y_MAX + 1.0) curShift1 = 0.0;
+		else if (curShift1 > Y_MAX-1.0) curShift1 = shiftLength; 
+		printf("CurShift1 = %lf\n", curShift1);
 	}
 	if (!(y > curShift2 + 1.5*shiftLength) && (y > curShift2 + shiftLength || y < curShift2-shiftLength))
 	{
 		curShift2 += 2*shiftLength;
-		if (curShift2 > Y_MAX-1) curShift2 -= Y_MAX; 
+		if (curShift2 > Y_MAX-1.0 && curShift2 < Y_MAX + 1.0) curShift2 = 0.0;
+		else if (curShift2 > Y_MAX-1) curShift2 = shiftLength;
+		printf("CufShift2 = %lf\n",curShift2);
 	}
 	
 	drawEnv(1.4,3.2,40,-16.7-curShift1);

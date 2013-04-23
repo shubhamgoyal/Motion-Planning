@@ -106,6 +106,7 @@ PotentialPlanner2::Vector2D PotentialPlanner2::calcForce(Pedestrian &apedestrian
 	//Find how dangerous is the pedestrian situation
 	if (isVeryDangerous(astate))
 	{
+		car->setExistVeryDangerous(true);
 		veryDangerous = true;
 		apedestrian.setColor(4);
 	}
@@ -231,6 +232,7 @@ Control PotentialPlanner2::convertForceToControl(Vector2D f)
 
 void PotentialPlanner2::plan(std::vector<Pedestrian*> &apedestrians)
 {
+	car->setExistVeryDangerous(false);
 	std::deque<Control> tempPath;
 
 	pedestrians = &apedestrians;

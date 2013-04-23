@@ -22,6 +22,7 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
+			existVeryDangerous = false;
 			if (SOUND_ENABLED) SDL_init_load();
 		}
 
@@ -29,6 +30,7 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			existVeryDangerous = false;
 			if (SOUND_ENABLED) SDL_init_load();
 		};
 
@@ -36,6 +38,7 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			existVeryDangerous = false;
 			if (SOUND_ENABLED) SDL_init_load();
 		};
 
@@ -43,6 +46,7 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = CARLENGTH;
 			carWidth = CARWIDTH;
+			existVeryDangerous = false;
 			if (SOUND_ENABLED) SDL_init_load();
 		};
 
@@ -50,6 +54,7 @@ class Car: public Object {
 			pthread_mutex_init(&mutex_path, NULL);
 			carLength = l;
 			carWidth = w;
+			existVeryDangerous = false;
 			if (SOUND_ENABLED) SDL_init_load();
 		};
 
@@ -61,13 +66,20 @@ class Car: public Object {
 					timeStop++;
 					if (timeStop > WAIT_TO_HORN)
 					{
-						isHorn = true;
-						if (SOUND_ENABLED && Mix_PlayChannel(-1, horn_sound, 0) ==-1) 
+						if (existVeryDangerous)
 						{
-							printf("Failed to play car horn sound\n");
-							exit(0);
+							isHorn = true;
+							if (SOUND_ENABLED && Mix_PlayChannel(-1, horn_sound, 0) ==-1) 
+							{
+								printf("Failed to play car horn sound\n");
+								exit(0);
+							}
+							timeStop -= HORN_INTERVAL;
 						}
-						timeStop -= HORN_INTERVAL;
+						else
+						{
+							state.v = 0.1;
+						}
 					}
 				}
 				else
@@ -152,7 +164,11 @@ class Car: public Object {
 			pthread_mutex_lock (&mutex_path);
 			path = apath;
 			pthread_mutex_unlock (&mutex_path);
+		}
 
+		void setExistVeryDangerous(bool a)
+		{
+			existVeryDangerous = a;
 		}
 
 		void draw()
@@ -180,8 +196,10 @@ class Car: public Object {
 		dd carWidth;
 		unsigned int timeStop;
 		bool isHorn;
+		bool existVeryDangerous;
 		std::deque <Control> path;
 		Mix_Chunk *horn_sound;
+		
 
 };
 
